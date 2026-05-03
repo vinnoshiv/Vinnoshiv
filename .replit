@@ -45,4 +45,6 @@ waitForPort = 5000
 outputType = "webview"
 
 [deployment]
-deploymentTarget = "cloudrun"
+deploymentTarget = "autoscale"
+run = ["node", "index.js"]
+build = ["bash", "-c", "cd frontend && npm install && npm run build"]
