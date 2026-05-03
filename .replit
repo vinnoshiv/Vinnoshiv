@@ -48,5 +48,5 @@ outputType = "webview"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npm", "start"]
-build = ["npm", "run", "build"]
+run = ["node", "index.js"]
+build = ["bash", "-c", "npm install && cd frontend && npm install && npm run build"]
