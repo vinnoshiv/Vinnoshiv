@@ -1,215 +1,322 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/Home.css';
 
-const products = [
+const PRODUCTS = [
   {
     key: 'animeflix',
     icon: 'fas fa-dragon',
-    iconClass: 'animeflix',
-    iconStyle: { background: 'linear-gradient(135deg, #8b5cf6, #6366f1)' },
-    title: 'AnimeFlix Scraper',
-    desc: 'Auto scrape & upload anime to Telegram 24/7',
+    style: { background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' },
+    name: 'AnimeFlix Scraper',
+    desc: 'Auto-scrape & upload anime releases to Telegram 24/7',
     price: '₹799',
+    old: '₹1,999',
   },
   {
     key: 'youtube',
     icon: 'fab fa-youtube',
-    iconClass: 'youtube',
-    iconStyle: { background: 'linear-gradient(135deg, #ef4444, #dc2626)' },
-    title: 'YouTube Downloader Bot',
-    desc: 'Download any YouTube video via Telegram bot',
+    style: { background: 'linear-gradient(135deg, #ef4444, #dc2626)' },
+    name: 'YouTube Downloader Bot',
+    desc: 'Download any YouTube video via Telegram, no cookies needed',
     price: '₹999',
+    old: '₹3,499',
   },
   {
     key: 'instagram',
     icon: 'fab fa-instagram',
-    iconClass: 'instagram',
-    iconStyle: { background: 'linear-gradient(135deg, #f59e0b, #ec4899)' },
-    title: 'Instagram Auto DM Bot',
-    desc: 'Automate Instagram DMs & grow your audience',
+    style: { background: 'linear-gradient(135deg, #f59e0b, #ec4899)' },
+    name: 'Instagram Auto DM Bot',
+    desc: 'Automate DMs, story reactions & follower growth',
     price: '₹699',
+    old: '₹1,499',
   },
   {
     key: 'telegram',
     icon: 'fab fa-telegram',
-    iconClass: 'telegram',
-    iconStyle: { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)' },
-    title: 'Telegram Channel Bot',
-    desc: 'Auto-post, schedule & manage your channel',
+    style: { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)' },
+    name: 'Telegram Channel Bot',
+    desc: 'Schedule posts, RSS feeds & auto-manage your channel',
     price: '₹599',
+    old: '₹999',
   },
 ];
 
+const FEATURES = [
+  { icon: 'fas fa-code', title: 'Full Source Code', desc: 'Clean, documented, production-ready code — yours to own and modify.' },
+  { icon: 'fas fa-rotate', title: 'Lifetime Updates', desc: 'Pay once and receive every future update at absolutely no extra cost.' },
+  { icon: 'fas fa-bolt', title: 'Instant Delivery', desc: 'Receive your purchase immediately via Telegram after payment.' },
+  { icon: 'fas fa-headset', title: 'Telegram Support', desc: 'Fast personal support directly on Telegram — real humans, not bots.' },
+  { icon: 'fas fa-server', title: 'Self-Hosted', desc: 'Run on your own VPS. No subscriptions, no third-party dependencies.' },
+  { icon: 'fas fa-shield-halved', title: 'Secure & Reliable', desc: 'Production-tested scripts with built-in rate limiting and error handling.' },
+];
+
 export default function Home() {
+  const { theme, toggle } = useTheme();
+
   return (
     <>
-      {/* Navbar */}
+      {/* ── Navbar ── */}
       <nav className="navbar">
-        <div className="navbar-logo">Vinnoshiv</div>
-        <ul className="navbar-links">
-          <li><a href="#about">About</a></li>
-          <li><a href="#products">Tools</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
+        <div className="navbar-inner">
+          <Link to="/" className="navbar-logo">
+            <div className="navbar-logo-icon"><i className="fas fa-bolt"></i></div>
+            Vinnoshiv
+          </Link>
+
+          <ul className="navbar-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+
+          <div className="navbar-actions">
+            <button className="theme-toggle" onClick={toggle} aria-label="Toggle theme">
+              <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
+            </button>
+            <Link to="/tools/automation" className="navbar-cta">
+              Browse Tools <i className="fas fa-arrow-right"></i>
+            </Link>
+          </div>
+        </div>
       </nav>
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <section className="hero">
-        <div className="hero-content">
-          <div className="hero-badge">
-            <i className="fas fa-bolt"></i> Automation Tools
+        <div className="hero-noise" />
+        <div className="hero-inner">
+          <div className="hero-eyebrow">
+            <span className="hero-eyebrow-dot" />
+            Automation tools for creators &amp; developers
           </div>
+
           <h1>
-            Build Smarter,<br />
-            <span className="gradient-text">Automate Everything</span>
+            The fastest way to<br />
+            <em>automate your workflow</em>
           </h1>
-          <p>
-            Vinnoshiv delivers premium automation bots and scripts for Telegram,
-            YouTube, Instagram and more — built for creators, developers, and
-            digital entrepreneurs.
+
+          <p className="hero-sub">
+            Premium Telegram bots and automation scripts — built for speed,
+            sold with full source code, and supported for life.
           </p>
-          <div className="hero-buttons">
-            <Link to="/tools/automation" className="btn-primary">
-              <i className="fas fa-rocket"></i> Browse Tools
+
+          <div className="hero-actions">
+            <Link to="/tools/automation" className="btn btn-primary btn-lg">
+              <i className="fas fa-rocket"></i> Explore Tools
             </Link>
-            <a href="#contact" className="btn-secondary">
-              <i className="fab fa-telegram"></i> Contact Us
+            <a href="#about" className="btn btn-outline btn-lg">
+              Learn more
             </a>
+          </div>
+
+          <div className="social-proof">
+            <div className="social-proof-avatars">
+              {['S', 'R', 'A', 'M', 'K'].map((l, i) => (
+                <div className="avatar-bubble" key={i}>{l}</div>
+              ))}
+            </div>
+            <div className="stars">
+              {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
+            </div>
+            <span className="social-proof-text">Trusted by 100+ customers</span>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <div className="stats-section">
-        <div className="stat-item">
-          <div className="number">4+</div>
-          <div className="label">Automation Tools</div>
-        </div>
-        <div className="stat-item">
-          <div className="number">100+</div>
-          <div className="label">Happy Customers</div>
-        </div>
-        <div className="stat-item">
-          <div className="number">24/7</div>
-          <div className="label">Support</div>
-        </div>
-        <div className="stat-item">
-          <div className="number">∞</div>
-          <div className="label">Lifetime Access</div>
+      {/* ── Logo Bar ── */}
+      <div className="logo-bar">
+        <div className="logo-bar-label">Works with</div>
+        <div className="logo-bar-items">
+          {[
+            { icon: 'fab fa-telegram', label: 'Telegram' },
+            { icon: 'fab fa-youtube', label: 'YouTube' },
+            { icon: 'fab fa-instagram', label: 'Instagram' },
+            { icon: 'fab fa-node-js', label: 'Node.js' },
+            { icon: 'fab fa-python', label: 'Python' },
+            { icon: 'fas fa-server', label: 'VPS / Linux' },
+          ].map((item) => (
+            <div className="logo-bar-item" key={item.label}>
+              <i className={item.icon}></i>
+              {item.label}
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* About */}
-      <section className="about-section" id="about">
-        <div className="section-tag">About Us</div>
-        <h2>Who is Vinnoshiv?</h2>
-        <p>
-          Vinnoshiv is an independent brand focused on building powerful,
-          affordable automation tools for the modern internet. We write clean,
-          production-ready source code that you own forever.
-        </p>
-        <p>
-          Every tool we sell comes with full source code, detailed documentation,
-          and lifetime updates — no subscriptions, no hidden fees.
-        </p>
-        <div className="about-cards">
-          <div className="about-card">
-            <div className="about-card-icon"><i className="fas fa-code"></i></div>
-            <h3>Full Source Code</h3>
-            <p>You get the complete, readable code — not a compiled black box.</p>
+      {/* ── Features ── */}
+      <section className="section" id="features">
+        <div className="section-inner">
+          <div className="section-header">
+            <div className="section-badge"><i className="fas fa-star"></i> Why Vinnoshiv</div>
+            <h2 className="section-title">Everything you need, nothing you don't</h2>
+            <p className="section-desc">
+              Every product ships with the things that actually matter to developers and creators.
+            </p>
           </div>
-          <div className="about-card">
-            <div className="about-card-icon"><i className="fas fa-infinity"></i></div>
-            <h3>Lifetime Updates</h3>
-            <p>Buy once and receive all future updates at no extra cost.</p>
-          </div>
-          <div className="about-card">
-            <div className="about-card-icon"><i className="fas fa-headset"></i></div>
-            <h3>Telegram Support</h3>
-            <p>Get help directly on Telegram — fast, personal, and reliable.</p>
-          </div>
-          <div className="about-card">
-            <div className="about-card-icon"><i className="fas fa-lock"></i></div>
-            <h3>One-Time Payment</h3>
-            <p>No subscriptions. Pay once, use it forever on your own server.</p>
-          </div>
-        </div>
-      </section>
 
-      {/* Products */}
-      <section className="products-section" id="products">
-        <div className="section-tag">Our Tools</div>
-        <h2>Automation Tools</h2>
-        <p className="sub">Click any tool to view details and pricing.</p>
-        <div className="products-grid">
-          {products.map((p) => (
-            <Link
-              key={p.key}
-              to={`/tools/automation?ref=${p.key}`}
-              className="product-card"
-            >
-              <div className="product-card-icon" style={p.iconStyle}>
-                <i className={p.icon}></i>
+          <div className="features-grid">
+            {FEATURES.map((f) => (
+              <div className="feature-cell" key={f.title}>
+                <div className="feature-icon"><i className={f.icon}></i></div>
+                <div className="feature-title">{f.title}</div>
+                <div className="feature-desc">{f.desc}</div>
               </div>
-              <h3>{p.title}</h3>
-              <p>{p.desc}</p>
-              <div className="product-card-price">{p.price}</div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Contact */}
-      <section className="contact-section" id="contact">
-        <div className="section-tag">Get In Touch</div>
-        <h2>Contact Us</h2>
-        <p>Have questions? Reach out via email or any of our social channels.</p>
-        <div className="contact-card">
-          <div className="contact-email">
-            <i className="fas fa-envelope"></i>
-            vinnoshiv@gmail.com
-          </div>
-          <div className="social-links">
-            <a
-              href="https://telegram.me/shivamnox"
-              className="social-link telegram"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="fab fa-telegram"></i> Telegram
-            </a>
-            <a
-              href="https://instagram.com/vinnoshiv"
-              className="social-link instagram"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="fab fa-instagram"></i> Instagram
-            </a>
-            <a
-              href="https://youtube.com/@vinnoshiv"
-              className="social-link youtube"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="fab fa-youtube"></i> YouTube
-            </a>
-            <a
-              href="https://github.com/vinnoshiv"
-              className="social-link github"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <i className="fab fa-github"></i> GitHub
-            </a>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── Products ── */}
+      <section className="section" id="products" style={{ background: 'var(--bg-subtle)' }}>
+        <div className="section-inner">
+          <div className="section-header">
+            <div className="section-badge"><i className="fas fa-tools"></i> Automation Tools</div>
+            <h2 className="section-title">Pick your automation</h2>
+            <p className="section-desc">
+              One-time payment, lifetime access, full source code included with every tool.
+            </p>
+          </div>
+
+          <div className="products-grid">
+            {PRODUCTS.map((p) => (
+              <Link
+                key={p.key}
+                to={`/tools/automation?ref=${p.key}`}
+                className="product-card"
+              >
+                <div className="product-card-badge">Popular</div>
+                <div className="product-card-icon" style={p.style}>
+                  <i className={p.icon}></i>
+                </div>
+                <div className="product-card-name">{p.name}</div>
+                <div className="product-card-desc">{p.desc}</div>
+                <div className="product-card-footer">
+                  <div>
+                    <span className="product-card-old">{p.old}</span>
+                    <span className="product-card-price">{p.price}</span>
+                  </div>
+                  <div className="product-card-arrow">
+                    <i className="fas fa-arrow-right"></i>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── About ── */}
+      <section className="section" id="about">
+        <div className="section-inner">
+          <div className="about-layout">
+            <div className="about-text">
+              <span className="label">About Vinnoshiv</span>
+              <h2>Built by a developer,<br />for developers</h2>
+              <p>
+                Vinnoshiv is an independent brand that creates affordable, production-grade
+                automation tools for Telegram, YouTube, Instagram, and beyond.
+              </p>
+              <p>
+                Every tool is hand-crafted, thoroughly tested, and documented — so you
+                can deploy in minutes and build on top of it without friction.
+              </p>
+              <div className="about-checks">
+                {[
+                  'Full source code', 'Lifetime updates',
+                  'Self-hostable', 'No subscriptions',
+                  'Telegram support', 'Instant delivery',
+                ].map((item) => (
+                  <div className="about-check" key={item}>
+                    <i className="fas fa-circle-check"></i> {item}
+                  </div>
+                ))}
+              </div>
+              <a
+                href="https://telegram.me/shivamnox"
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-primary btn-md"
+              >
+                <i className="fab fa-telegram"></i> Chat on Telegram
+              </a>
+            </div>
+
+            <div className="about-visual">
+              <div className="about-card-stack">
+                {[
+                  { icon: 'fas fa-tools', iconStyle: { background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }, label: 'Total Products', value: '4+', sub: 'and growing' },
+                  { icon: 'fas fa-users', iconStyle: { background: 'rgba(5,150,105,0.12)', color: '#059669' }, label: 'Happy Customers', value: '100+', sub: 'across India' },
+                  { icon: 'fas fa-rotate', iconStyle: { background: 'rgba(14,165,233,0.12)', color: '#0ea5e9' }, label: 'Updates Shipped', value: '∞', sub: 'lifetime, free' },
+                  { icon: 'fas fa-bolt', iconStyle: { background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }, label: 'Avg. Response Time', value: '< 2h', sub: 'support on Telegram' },
+                ].map((s) => (
+                  <div className="mini-stat-card" key={s.label}>
+                    <div className="mini-stat-icon" style={s.iconStyle}>
+                      <i className={s.icon}></i>
+                    </div>
+                    <div className="mini-stat-info">
+                      <h4>{s.value}</h4>
+                      <p>{s.label} — {s.sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Contact ── */}
+      <section className="section" id="contact" style={{ background: 'var(--bg-subtle)' }}>
+        <div className="section-inner">
+          <div className="section-header">
+            <div className="section-badge"><i className="fas fa-envelope"></i> Get in touch</div>
+            <h2 className="section-title">We're here to help</h2>
+            <p className="section-desc">
+              Questions before buying? Pre-sales queries? Reach out — we usually reply within 2 hours.
+            </p>
+          </div>
+
+          <div className="contact-box">
+            <div className="contact-email-display">
+              <i className="fas fa-envelope"></i>
+              vinnoshiv@gmail.com
+            </div>
+
+            <div className="social-row">
+              <a href="https://telegram.me/shivamnox" target="_blank" rel="noreferrer" className="social-pill tg">
+                <i className="fab fa-telegram"></i> @shivamnox
+              </a>
+              <a href="https://instagram.com/vinnoshiv" target="_blank" rel="noreferrer" className="social-pill ig">
+                <i className="fab fa-instagram"></i> Instagram
+              </a>
+              <a href="https://youtube.com/@vinnoshiv" target="_blank" rel="noreferrer" className="social-pill yt">
+                <i className="fab fa-youtube"></i> YouTube
+              </a>
+              <a href="https://github.com/vinnoshiv" target="_blank" rel="noreferrer" className="social-pill gh">
+                <i className="fab fa-github"></i> GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
       <footer className="footer">
-        <p>© {new Date().getFullYear()} <span>Vinnoshiv</span>. All rights reserved.</p>
+        <div className="footer-inner">
+          <div className="footer-logo">
+            <div className="navbar-logo-icon" style={{ width: 22, height: 22, borderRadius: 5, fontSize: '0.6rem' }}>
+              <i className="fas fa-bolt"></i>
+            </div>
+            Vinnoshiv
+          </div>
+          <div className="footer-copy">© {new Date().getFullYear()} Vinnoshiv. All rights reserved.</div>
+          <div className="footer-links">
+            <Link to="/tools/automation">Tools</Link>
+            <Link to="/admin/login">Admin</Link>
+            <a href="mailto:vinnoshiv@gmail.com">Email</a>
+          </div>
+        </div>
       </footer>
     </>
   );

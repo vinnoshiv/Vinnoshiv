@@ -1,17 +1,92 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── CSS Variables ─── */
+:root {
+  --bg:           #ffffff;
+  --bg-subtle:    #f9fafb;
+  --bg-muted:     #f3f4f6;
+  --border:       #e5e7eb;
+  --border-muted: #f3f4f6;
+  --text:         #111827;
+  --text-2:       #374151;
+  --text-3:       #6b7280;
+  --text-4:       #9ca3af;
+  --card:         #ffffff;
+  --card-hover:   #f9fafb;
+
+  --accent:       #7c3aed;
+  --accent-2:     #6d28d9;
+  --accent-glow:  rgba(124, 58, 237, 0.15);
+  --accent-text:  #7c3aed;
+  --green:        #059669;
+  --green-bg:     rgba(5, 150, 105, 0.08);
+  --green-border: rgba(5, 150, 105, 0.2);
+  --red:          #dc2626;
+  --red-bg:       rgba(220, 38, 38, 0.08);
+  --red-border:   rgba(220, 38, 38, 0.2);
+
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg:    0 10px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-xl:    0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.07);
+
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-xl:    20px;
+  --radius-2xl:   28px;
+  --radius-full:  9999px;
+
+  --font:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition:   all 0.2s ease;
 }
+
+[data-theme="dark"] {
+  --bg:           #09090b;
+  --bg-subtle:    #111113;
+  --bg-muted:     #18181b;
+  --border:       #27272a;
+  --border-muted: #1f1f22;
+  --text:         #fafafa;
+  --text-2:       #e4e4e7;
+  --text-3:       #a1a1aa;
+  --text-4:       #71717a;
+  --card:         #111113;
+  --card-hover:   #18181b;
+
+  --accent-glow:  rgba(124, 58, 237, 0.2);
+  --green-bg:     rgba(5, 150, 105, 0.1);
+  --green-border: rgba(5, 150, 105, 0.25);
+  --red-bg:       rgba(220, 38, 38, 0.1);
+  --red-border:   rgba(220, 38, 38, 0.25);
+
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg:    0 10px 40px rgba(0,0,0,0.5);
+  --shadow-xl:    0 20px 60px rgba(0,0,0,0.6);
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background: #07070b;
-  color: #fff;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+a { text-decoration: none; color: inherit; }
+
+img { max-width: 100%; display: block; }
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-muted); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: var(--text-4); }

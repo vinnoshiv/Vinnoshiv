@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 import '../styles/AdminLogin.css';
 
 export default function AdminLogin() {
@@ -7,13 +8,13 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
-  const navigate = useNavigate();
+  const { theme, toggle }       = useTheme();
+  const navigate                = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const res  = await fetch('/api/auth/login', {
         method:  'POST',
@@ -21,17 +22,12 @@ export default function AdminLogin() {
         body:    JSON.stringify({ username, password }),
       });
       const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || 'Login failed. Check your credentials.');
-        return;
-      }
-
+      if (!res.ok) { setError(data.message || 'Invalid credentials.'); return; }
       localStorage.setItem('vinnoshiv_admin_token',    data.token);
       localStorage.setItem('vinnoshiv_admin_username', data.username);
       navigate('/admin');
-    } catch (err) {
-      setError('Network error. Is the server running?');
+    } catch {
+      setError('Network error — is the server running?');
     } finally {
       setLoading(false);
     }
@@ -40,60 +36,56 @@ export default function AdminLogin() {
   return (
     <div className="admin-login-page">
       <div className="login-card">
-        <div className="login-logo">
-          <div className="login-logo-icon">
+        <div className="login-header">
+          <div className="login-logo-wrap">
             <i className="fas fa-shield-halved"></i>
           </div>
-          <h1>Vinnoshiv Admin</h1>
-          <p>Sign in to your dashboard</p>
+          <h1>Sign in to Admin</h1>
+          <p>Vinnoshiv Dashboard</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           {error && (
-            <div className="error-msg">
-              <i className="fas fa-circle-exclamation"></i> {error}
+            <div className="error-banner">
+              <i className="fas fa-triangle-exclamation"></i> {error}
             </div>
           )}
 
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="un">Username</label>
             <input
-              id="username"
-              type="text"
-              placeholder="Enter admin username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoComplete="username"
+              id="un" type="text" placeholder="Enter username"
+              value={username} onChange={e => setUsername(e.target.value)}
+              required autoComplete="username"
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="pw">Password</label>
             <input
-              id="password"
-              type="password"
-              placeholder="Enter admin password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
+              id="pw" type="password" placeholder="Enter password"
+              value={password} onChange={e => setPassword(e.target.value)}
+              required autoComplete="current-password"
             />
           </div>
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? (
-              <><i className="fas fa-circle-notch fa-spin"></i> Signing in...</>
-            ) : (
-              <><i className="fas fa-right-to-bracket"></i> Sign In</>
-            )}
+          <button className="login-submit" type="submit" disabled={loading}>
+            {loading
+              ? <><i className="fas fa-circle-notch fa-spin"></i> Signing in…</>
+              : <><i className="fas fa-right-to-bracket"></i> Sign In</>}
           </button>
         </form>
 
-        <div className="back-home">
-          <Link to="/">
+        <div className="login-divider"><span>or</span></div>
+
+        <div style={{ display:'flex', gap:'0.5rem', justifyContent:'center' }}>
+          <Link to="/" className="btn btn-ghost btn-sm" style={{ textDecoration:'none', fontSize:'0.8rem', color:'var(--text-3)' }}>
             <i className="fas fa-arrow-left"></i> Back to Home
           </Link>
+          <button onClick={toggle} className="btn btn-ghost btn-sm" style={{ fontSize:'0.8rem', color:'var(--text-3)', cursor:'pointer', border:'none', background:'none', fontFamily:'var(--font)' }}>
+            <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
+            {theme === 'dark' ? ' Light' : ' Dark'} mode
+          </button>
         </div>
       </div>
     </div>
