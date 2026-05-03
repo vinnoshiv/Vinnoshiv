@@ -6,39 +6,47 @@ import '../styles/Home.css';
 const PRODUCTS = [
   {
     key: 'animeflix',
+    accent: 'purple',
     icon: 'fas fa-dragon',
     style: { background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' },
     name: 'AnimeFlix Scraper',
     desc: 'Auto-scrape & upload anime releases to Telegram 24/7',
     price: '₹799',
     old: '₹1,999',
+    discount: '60% OFF',
   },
   {
     key: 'youtube',
+    accent: 'red',
     icon: 'fab fa-youtube',
     style: { background: 'linear-gradient(135deg, #ef4444, #dc2626)' },
     name: 'YouTube Downloader Bot',
     desc: 'Download any YouTube video via Telegram, no cookies needed',
     price: '₹999',
     old: '₹3,499',
+    discount: '71% OFF',
   },
   {
     key: 'instagram',
+    accent: 'pink',
     icon: 'fab fa-instagram',
     style: { background: 'linear-gradient(135deg, #f59e0b, #ec4899)' },
     name: 'Instagram Auto DM Bot',
     desc: 'Automate DMs, story reactions & follower growth',
     price: '₹699',
     old: '₹1,499',
+    discount: '53% OFF',
   },
   {
     key: 'telegram',
+    accent: 'blue',
     icon: 'fab fa-telegram',
     style: { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)' },
     name: 'Telegram Channel Bot',
     desc: 'Schedule posts, RSS feeds & auto-manage your channel',
     price: '₹599',
     old: '₹999',
+    discount: '40% OFF',
   },
 ];
 
@@ -66,7 +74,7 @@ export default function Home() {
 
           <ul className="navbar-links">
             <li><a href="#features">Features</a></li>
-            <li><a href="#products">Products</a></li>
+            <li><a href="#products">Tool Store</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
@@ -76,7 +84,7 @@ export default function Home() {
               <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
             </button>
             <Link to="/tools/automation" className="navbar-cta">
-              Browse Tools <i className="fas fa-arrow-right"></i>
+              <i className="fas fa-store"></i> Tool Store
             </Link>
           </div>
         </div>
@@ -88,25 +96,25 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-eyebrow">
             <span className="hero-eyebrow-dot" />
-            Automation tools for creators &amp; developers
+            Automation scripts for creators &amp; developers
           </div>
 
           <h1>
-            The fastest way to<br />
-            <em>automate your workflow</em>
+            Ship your automation<br />
+            <em>faster than ever</em>
           </h1>
 
           <p className="hero-sub">
-            Premium Telegram bots and automation scripts — built for speed,
-            sold with full source code, and supported for life.
+            Premium Telegram bots and automation scripts — full source code,
+            one-time payment, lifetime updates. No subscriptions. Ever.
           </p>
 
           <div className="hero-actions">
             <Link to="/tools/automation" className="btn btn-primary btn-lg">
-              <i className="fas fa-rocket"></i> Explore Tools
+              <i className="fas fa-store"></i> Visit Tool Store
             </Link>
-            <a href="#about" className="btn btn-outline btn-lg">
-              Learn more
+            <a href="#features" className="btn btn-outline btn-lg">
+              See what's included
             </a>
           </div>
 
@@ -120,6 +128,13 @@ export default function Home() {
               {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
             </div>
             <span className="social-proof-text">Trusted by 100+ customers</span>
+          </div>
+
+          <div className="hero-pills">
+            <span className="hero-pill green"><i className="fas fa-circle-check"></i> One-time payment</span>
+            <span className="hero-pill purple"><i className="fas fa-code"></i> Full source code</span>
+            <span className="hero-pill green"><i className="fas fa-rotate"></i> Lifetime updates</span>
+            <span className="hero-pill blue"><i className="fab fa-telegram"></i> Instant delivery</span>
           </div>
         </div>
       </section>
@@ -171,10 +186,10 @@ export default function Home() {
       <section className="section" id="products" style={{ background: 'var(--bg-subtle)' }}>
         <div className="section-inner">
           <div className="section-header">
-            <div className="section-badge"><i className="fas fa-tools"></i> Automation Tools</div>
+            <div className="section-badge"><i className="fas fa-store"></i> Tool Store</div>
             <h2 className="section-title">Pick your automation</h2>
             <p className="section-desc">
-              One-time payment, lifetime access, full source code included with every tool.
+              One-time payment, lifetime access, full source code included with every purchase.
             </p>
           </div>
 
@@ -184,8 +199,9 @@ export default function Home() {
                 key={p.key}
                 to={`/tools/automation?ref=${p.key}`}
                 className="product-card"
+                data-accent={p.accent}
               >
-                <div className="product-card-badge">Popular</div>
+                <div className="product-card-badge">{p.discount}</div>
                 <div className="product-card-icon" style={p.style}>
                   <i className={p.icon}></i>
                 </div>
@@ -202,6 +218,13 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+          </div>
+
+          <div className="products-cta">
+            <Link to="/tools/automation" className="btn btn-outline btn-md">
+              <i className="fas fa-store"></i> Browse Full Tool Store
+              <i className="fas fa-arrow-right" style={{ fontSize:'0.75rem' }}></i>
+            </Link>
           </div>
         </div>
       </section>
@@ -312,7 +335,7 @@ export default function Home() {
           </div>
           <div className="footer-copy">© {new Date().getFullYear()} Vinnoshiv. All rights reserved.</div>
           <div className="footer-links">
-            <Link to="/tools/automation">Tools</Link>
+            <Link to="/tools/automation">Tool Store</Link>
             <Link to="/admin/login">Admin</Link>
             <a href="mailto:vinnoshiv@gmail.com">Email</a>
           </div>

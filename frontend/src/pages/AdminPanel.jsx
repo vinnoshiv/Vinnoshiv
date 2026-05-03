@@ -5,7 +5,7 @@ import '../styles/AdminPanel.css';
 
 const NAV = [
   { icon: 'fas fa-gauge', label: 'Overview', id: 'overview' },
-  { icon: 'fas fa-tools', label: 'Tools', id: 'tools' },
+  { icon: 'fas fa-store', label: 'Tool Store', id: 'tools' },
   { icon: 'fas fa-circle-info', label: 'Site Info', id: 'info' },
 ];
 
@@ -76,7 +76,7 @@ export default function AdminPanel() {
             <i className="fas fa-house"></i> Homepage
           </Link>
           <Link to="/tools/automation" className="sidebar-item">
-            <i className="fas fa-robot"></i> Tools Page
+            <i className="fas fa-store"></i> Tool Store
           </Link>
           <a href="https://telegram.me/shivamnox" target="_blank" rel="noreferrer" className="sidebar-item">
             <i className="fab fa-telegram"></i> Telegram
@@ -120,7 +120,7 @@ export default function AdminPanel() {
                     <div className="admin-panel-body">
                       <div className="quick-links-grid">
                         <Link to="/" className="quick-link"><i className="fas fa-house"></i> View Home</Link>
-                        <Link to="/tools/automation" className="quick-link"><i className="fas fa-robot"></i> Tools Page</Link>
+                        <Link to="/tools/automation" className="quick-link"><i className="fas fa-store"></i> Tool Store</Link>
                         <a href="mailto:vinnoshiv@gmail.com" className="quick-link"><i className="fas fa-envelope"></i> Send Email</a>
                         <a href="https://telegram.me/shivamnox" target="_blank" rel="noreferrer" className="quick-link"><i className="fab fa-telegram"></i> Telegram</a>
                       </div>
@@ -186,12 +186,12 @@ export default function AdminPanel() {
             {active === 'tools' && (
               <>
                 <div className="admin-page-header">
-                  <h1>Tools Overview</h1>
-                  <p>All listed automation tools on the store.</p>
+                  <h1>Tool Store Overview</h1>
+                  <p>All listed products in the Tool Store.</p>
                 </div>
                 <div className="admin-panel">
                   <div className="admin-panel-head">
-                    <div className="admin-panel-title"><i className="fas fa-tools"></i> Listed Products</div>
+                    <div className="admin-panel-title"><i className="fas fa-store"></i> Listed Products</div>
                   </div>
                   <div className="admin-panel-body">
                     {[

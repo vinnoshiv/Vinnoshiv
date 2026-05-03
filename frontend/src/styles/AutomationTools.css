@@ -487,6 +487,32 @@
   flex-shrink: 0;
 }
 
+/* Trust row */
+.at-trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 0 0.25rem;
+}
+
+.at-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.at-trust-item i {
+  color: var(--green);
+  font-size: 0.7rem;
+}
+
 /* Footer */
 .at-footer {
   padding: 1.5rem 0 0;

@@ -122,7 +122,7 @@ export default function AutomationTools() {
   const product = ref && PRODUCTS[ref] ? PRODUCTS[ref] : null;
 
   useEffect(() => {
-    document.title = product ? `${product.title} — Vinnoshiv` : 'Automation Tools — Vinnoshiv';
+    document.title = product ? `${product.title} — Vinnoshiv Tool Store` : 'Tool Store — Vinnoshiv';
   }, [product]);
 
   const select = (key) => setSearchParams({ ref: key });
@@ -135,7 +135,7 @@ export default function AutomationTools() {
           <i className="fas fa-arrow-left"></i> Home
         </Link>
         <span style={{ color: 'var(--border)', userSelect: 'none' }}>/</span>
-        <span className="at-topbar-title">Automation Tools</span>
+        <span className="at-topbar-title">Tool Store</span>
         <div className="at-topbar-actions">
           <button className="at-theme-btn" onClick={toggle} aria-label="Toggle theme">
             <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
@@ -147,10 +147,10 @@ export default function AutomationTools() {
         {/* ── Sidebar: product list ── */}
         <div className="at-sidebar">
           <div className="at-sidebar-header">
-            <div className="at-sidebar-label">All Tools</div>
+            <div className="at-sidebar-label">All Products</div>
             <div className="at-search">
               <i className="fas fa-magnifying-glass"></i>
-              <input className="at-search-input" type="text" placeholder="Search tools…" readOnly />
+              <input className="at-search-input" type="text" placeholder="Search store…" readOnly />
             </div>
           </div>
           <div className="at-product-list">
@@ -183,9 +183,9 @@ export default function AutomationTools() {
         <div className="at-detail">
           {!product ? (
             <div className="at-empty-state">
-              <div className="at-empty-icon"><i className="fas fa-arrow-left"></i></div>
-              <h3>Select a tool</h3>
-              <p>Pick any product from the list to see pricing and details.</p>
+              <div className="at-empty-icon"><i className="fas fa-store"></i></div>
+              <h3>Browse the Tool Store</h3>
+              <p>Select any product from the list to view pricing, features, and purchase options.</p>
             </div>
           ) : (
             <div className="at-detail-inner">
@@ -265,16 +265,30 @@ export default function AutomationTools() {
                 </div>
               </div>
 
+              {/* Trust row */}
+              <div className="at-trust-row">
+                {[
+                  { icon: 'fas fa-code', label: 'Full source code' },
+                  { icon: 'fas fa-rotate', label: 'Lifetime updates' },
+                  { icon: 'fas fa-bolt', label: 'Instant delivery' },
+                  { icon: 'fas fa-headset', label: 'Telegram support' },
+                ].map(t => (
+                  <div className="at-trust-item" key={t.label}>
+                    <i className={t.icon}></i> {t.label}
+                  </div>
+                ))}
+              </div>
+
               {/* Footer */}
               <div className="at-footer">
-                <span className="at-footer-text">Questions? We're on Telegram.</span>
+                <span className="at-footer-text">Questions before buying?</span>
                 <a
                   href="https://telegram.me/shivamnox"
                   className="at-footer-link"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <i className="fab fa-telegram"></i> @shivamnox
+                  <i className="fab fa-telegram"></i> Chat @shivamnox
                 </a>
               </div>
             </div>
