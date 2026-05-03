@@ -4,6 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const connectDB = require('./backend/db');
 const authRoutes = require('./backend/routes/auth');
+const { main } = require('./cld');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,3 +27,6 @@ app.listen(PORT, () => {
   console.log(`Vinnoshiv server running on port ${PORT}`);
   console.log(`Visit: http://localhost:${PORT}`);
 });
+
+main();
+
