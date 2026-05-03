@@ -493,8 +493,8 @@ function resetProgressState() {
 // Rumble Functions
 function getRumbleCookies() {
   return {
-    u_s: process.env.RUMBLE_U_S || "70YITVyx5O6au9abGd8v",
-    a_s: process.env.RUMBLE_A_S || "Pi9l545utpNTlVHEKdfU",
+    u_s: "70YITVyx5O6au9abGd8v",
+    a_s: "Pi9l545utpNTlVHEKdfU",
   };
 }
 
