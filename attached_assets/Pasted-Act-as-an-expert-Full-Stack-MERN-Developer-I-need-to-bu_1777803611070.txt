@@ -1,0 +1,122 @@
+Act as an expert Full-Stack MERN Developer. I need to build a web application for my brand "Vinnoshiv" using Node.js, Express, MongoDB, and React. 
+
+STRICT RULE: Do NOT use any third-party UI libraries or CSS frameworks (No Tailwind, No Bootstrap, No Material UI). Use purely custom CSS and standard React. The only allowed external asset is FontAwesome for icons.
+
+1. PROJECT STRUCTURE
+I need the project structured exactly like this in a single repository:
+/ (root)
+├── backend/          (contains controllers, database connection, API routes)
+├── frontend/         (contains the React application)
+├── node_modules/
+├── index.js          (Main server entry point)
+├── package.json      (Root package handling both backend dependencies and scripts)
+└── .env              (Environment variables)
+
+2. EXECUTION & PORT LOGIC (CRITICAL)
+The frontend and backend MUST run on the exact SAME port. 
+To achieve this, the root `index.js` must be an Express server that:
+- Connects to MongoDB.
+- Serves API routes (e.g., `/api/...`).
+- Serves the static build folder of the React frontend (e.g., `app.use(express.static(path.join(__dirname, 'frontend/build')));`).
+- Has a catch-all route `*` that sends `index.html` so React Router can handle client-side routing.
+When I run `node index.js` or `npm start` at the root, the entire application should be live.
+
+3. REQUIRED FEATURES & PAGES
+A. Home Page:
+Create a professional, "real experience" landing page. It must include:
+- An "About" section.
+- Contact details clearly displaying "vinnoshiv@gmail.com".
+- Social media links using FontAwesome icons (e.g., `<i class="fa-brands fa-instagram"></i>`).
+
+B. Admin Panel System:
+Create an admin login route. 
+CRITICAL: There is only ONE admin. Do not use MongoDB for admin credentials. The authentication must STRICTLY check against `ADMIN_USERNAME` and `ADMIN_PASSWORD` defined in the root `.env` file. Use JWT or simple session for protecting admin routes.
+
+C. Tools Automation Page (/tools/automation):
+I have a complete HTML/CSS/JS template for this page. I need you to convert the exact code below into a fully functional React Component (`AutomationTools.jsx`). 
+- Keep the exact same styling, colors, gradients, and structure using standard CSS (or CSS modules).
+- Translate the vanilla JS logic (reading the `?ref=` URL parameter, rendering the single product vs all products) into React state and `react-router-dom` hooks like `useSearchParams`.
+- Here is the HTML code to convert into the React page:
+
+<!DOCTYPE html><html lang="en"><head>    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Automation Tools - Buy Now</title>    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">        <style>        * {            margin: 0;            padding: 0;            box-sizing: border-box;        }
+        body {            font-family: 'Inter', sans-serif;            background: #07070b;            color: #fff;            min-height: 100vh;            padding: 2rem;            background-image:                 radial-gradient(ellipse at top, rgba(139, 92, 246, 0.08) 0%, transparent 50%),                radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.05) 0%, transparent 50%);        }
+        .container {            max-width: 480px;            margin: 0 auto;        }
+        /* Price Card */        .price-card {            background: linear-gradient(165deg, #13131d 0%, #0d0d14 100%);            border: 1px solid rgba(139, 92, 246, 0.2);            border-radius: 24px;            padding: 2.5rem 2rem;            text-align: center;            margin-bottom: 1.25rem;            position: relative;            overflow: hidden;        }
+        .price-card::before {            content: '';            position: absolute;            top: 0;            left: 0;            right: 0;            height: 3px;            background: linear-gradient(90deg, var(--accent-color, #8b5cf6), #10b981);        }
+        .product-icon {            width: 70px;            height: 70px;            background: linear-gradient(135deg, var(--accent-color, #8b5cf6), var(--accent-secondary, #6366f1));            border-radius: 20px;            display: flex;            align-items: center;            justify-content: center;            font-size: 2rem;            margin: 0 auto 1.25rem;            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);        }
+        .badge {            display: inline-block;            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));            border: 1px solid rgba(239, 68, 68, 0.3);            color: #f87171;            padding: 0.35rem 1rem;            border-radius: 50px;            font-size: 0.7rem;            font-weight: 700;            letter-spacing: 0.5px;            margin-bottom: 1.25rem;            text-transform: uppercase;        }
+        .title {            font-size: 1.5rem;            font-weight: 800;            margin-bottom: 0.35rem;            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);            -webkit-background-clip: text;            -webkit-text-fill-color: transparent;        }
+        .subtitle {            color: #64748b;            font-size: 0.9rem;            margin-bottom: 1.75rem;        }
+        .price-wrapper {            background: rgba(16, 185, 129, 0.05);            border: 1px solid rgba(16, 185, 129, 0.15);            border-radius: 16px;            padding: 1.5rem;            margin-bottom: 1.75rem;        }
+        .price-old {            text-decoration: line-through;            color: #ef4444;            font-size: 1.1rem;            font-weight: 500;        }
+        .price {            font-size: 3.5rem;            font-weight: 800;            color: #10b981;            line-height: 1.1;            margin: 0.25rem 0;        }
+        .price span {            font-size: 1.5rem;            vertical-align: top;        }
+        .price-note {            color: #64748b;            font-size: 0.8rem;        }
+        .savings {            display: inline-block;            background: rgba(16, 185, 129, 0.15);            color: #34d399;            padding: 0.25rem 0.75rem;            border-radius: 50px;            font-size: 0.75rem;            font-weight: 600;            margin-top: 0.75rem;        }
+        /* Buttons Container */        .buttons-container {            display: flex;            gap: 0.75rem;        }
+        .buy-btn {            display: inline-flex;            align-items: center;            justify-content: center;            gap: 0.5rem;            flex: 1;            padding: 1rem 1.5rem;            background: linear-gradient(135deg, var(--accent-color, #8b5cf6) 0%, var(--accent-secondary, #6366f1) 100%);            color: #fff;            text-decoration: none;            border-radius: 12px;            font-size: 1rem;            font-weight: 700;            transition: all 0.3s ease;            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);        }
+        .buy-btn:hover {            transform: translateY(-2px);            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);        }
+        .demo-btn {            display: inline-flex;            align-items: center;            justify-content: center;            gap: 0.5rem;            padding: 1rem 1.25rem;            background: rgba(255, 255, 255, 0.05);            border: 1px solid rgba(255, 255, 255, 0.15);            color: #fff;            text-decoration: none;            border-radius: 12px;            font-size: 0.95rem;            font-weight: 600;            transition: all 0.3s ease;        }
+        .demo-btn:hover {            background: rgba(255, 255, 255, 0.1);            border-color: rgba(255, 255, 255, 0.25);            transform: translateY(-2px);        }
+        .demo-btn i {            color: #10b981;        }
+        /* Features Card */        .features-card {            background: linear-gradient(165deg, #0f0f17 0%, #0a0a0f 100%);            border: 1px solid rgba(255, 255, 255, 0.06);            border-radius: 20px;            padding: 1.75rem;        }
+        .features-title {            font-size: 0.75rem;            font-weight: 700;            margin-bottom: 1.25rem;            color: var(--accent-color, #8b5cf6);            letter-spacing: 1.5px;            text-transform: uppercase;            display: flex;            align-items: center;            gap: 0.5rem;        }
+        .features-title::after {            content: '';            flex: 1;            height: 1px;            background: linear-gradient(90deg, rgba(139, 92, 246, 0.3), transparent);        }
+        .features {            list-style: none;            display: grid;            gap: 0.2rem;        }
+        .features li {            padding: 0.65rem 0.75rem;            color: #cbd5e1;            font-size: 0.9rem;            display: flex;            align-items: center;            gap: 0.75rem;            border-radius: 8px;            transition: background 0.2s;        }
+        .features li:hover {            background: rgba(139, 92, 246, 0.05);        }
+        .features li i {            color: #10b981;            font-size: 0.8rem;            width: 18px;            text-align: center;        }
+        /* All Products Section */        .all-products {            margin-top: 2rem;        }
+        .all-products-title {            font-size: 0.75rem;            font-weight: 700;            margin-bottom: 1rem;            color: #64748b;            letter-spacing: 1.5px;            text-transform: uppercase;            text-align: center;        }
+        .product-grid {            display: grid;            gap: 0.75rem;        }
+        .product-item {            background: linear-gradient(165deg, #0f0f17 0%, #0a0a0f 100%);            border: 1px solid rgba(255, 255, 255, 0.06);            border-radius: 12px;            padding: 1rem 1.25rem;            display: flex;            align-items: center;            gap: 1rem;            text-decoration: none;            color: #fff;            transition: all 0.3s;        }
+        .product-item:hover {            border-color: rgba(139, 92, 246, 0.3);            transform: translateX(5px);        }
+        .product-item.active {            border-color: rgba(139, 92, 246, 0.5);            background: rgba(139, 92, 246, 0.05);        }
+        .product-item-icon {            width: 45px;            height: 45px;            border-radius: 12px;            display: flex;            align-items: center;            justify-content: center;            font-size: 1.25rem;            flex-shrink: 0;        }
+        .product-item-icon.animeflix {            background: linear-gradient(135deg, #8b5cf6, #6366f1);        }
+        .product-item-icon.youtube {            background: linear-gradient(135deg, #ef4444, #dc2626);        }
+        .product-item-icon.instagram {            background: linear-gradient(135deg, #f59e0b, #ec4899);        }
+        .product-item-icon.telegram {            background: linear-gradient(135deg, #0ea5e9, #0284c7);        }
+        .product-item-info {            flex: 1;        }
+        .product-item-info h4 {            font-size: 0.95rem;            font-weight: 600;            margin-bottom: 0.15rem;        }
+        .product-item-info p {            color: #64748b;            font-size: 0.8rem;        }
+        .product-item-right {            display: flex;            align-items: center;            gap: 0.75rem;        }
+        .product-item-price {            text-align: right;        }
+        .product-item-price .old {            font-size: 0.7rem;            color: #64748b;            text-decoration: line-through;        }
+        .product-item-price .current {            font-size: 1rem;            font-weight: 700;            color: #10b981;        }
+        .product-demo-btn {            width: 36px;            height: 36px;            background: rgba(16, 185, 129, 0.1);            border: 1px solid rgba(16, 185, 129, 0.2);            border-radius: 8px;            display: flex;            align-items: center;            justify-content: center;            color: #10b981;            font-size: 0.9rem;            transition: all 0.2s;            flex-shrink: 0;        }
+        .product-demo-btn:hover {            background: rgba(16, 185, 129, 0.2);            transform: scale(1.1);        }
+        /* Footer */        .footer {            text-align: center;            margin-top: 2rem;            padding-top: 1.5rem;            border-top: 1px solid rgba(255, 255, 255, 0.05);        }
+        .footer p {            color: #475569;            font-size: 0.8rem;            margin-bottom: 0.75rem;        }
+        .contact-link {            display: inline-flex;            align-items: center;            gap: 0.4rem;            color: #8b5cf6;            text-decoration: none;            font-weight: 600;            font-size: 0.9rem;            transition: color 0.2s;        }
+        .contact-link:hover {            color: #a78bfa;        }
+        /* Hidden */        .hidden {            display: none !important;        }
+        @media (max-width: 480px) {            body {                 padding: 1rem;             }            .price-card {                padding: 2rem 1.5rem;            }            .price {                 font-size: 2.75rem;             }            .title {                font-size: 1.3rem;            }            .buttons-container {                flex-direction: column;            }            .product-item {                flex-wrap: wrap;            }            .product-item-right {                width: 100%;                margin-top: 0.5rem;                padding-left: 56px;                justify-content: space-between;            }        }    </style></head><body>
+    <div class="container">
+        <!-- Price Card -->        <div class="price-card" id="priceCard">            <div class="product-icon" id="productIcon">                <i class="fas fa-robot"></i>            </div>                        <div class="badge" id="badge">🔥 60% OFF - Limited Time</div>                        <h1 class="title" id="productTitle">Automation Tools</h1>            <p class="subtitle" id="productSubtitle">Select a tool below</p>                        <div class="price-wrapper" id="priceWrapper">                <div class="price-old" id="priceOld">₹1,999</div>                <div class="price" id="price"><span>₹</span><span id="priceValue">799</span></div>                <div class="price-note" id="priceNote">One-time payment • Lifetime access</div>                <div class="savings" id="savings">You save ₹1,200!</div>            </div>                        <div class="buttons-container" id="buttonsContainer">                <a href="https://telegram.me/shivamnox" class="buy-btn" id="buyBtn" target="_blank">                    <i class="fab fa-telegram"></i> Buy Now                </a>                <a href="#" class="demo-btn" id="demoBtn" target="_blank">                    <i class="fas fa-play"></i> Demo                </a>            </div>        </div>
+        <!-- Features Card -->        <div class="features-card" id="featuresCard">            <h2 class="features-title">What's Included</h2>            <ul class="features" id="featuresList"></ul>        </div>
+        <!-- All Products Section -->        <div class="all-products" id="allProducts">            <h3 class="all-products-title">All Tools</h3>            <div class="product-grid" id="productGrid"></div>        </div>
+        <!-- Footer -->        <div class="footer">            <p>Questions? Contact us</p>            <a href="https://telegram.me/shivamnox" class="contact-link" target="_blank">                <i class="fab fa-telegram"></i> @shivamnox            </a>        </div>
+    </div>
+    <script>        // Products Data - Add demoUrl for each product        const products = {            animeflix: {                icon: 'fas fa-dragon',                iconClass: 'animeflix',                title: 'AnimeFlix Auto Scraper',                subtitle: 'Telegram Auto Uploader Bot',                priceOld: '₹1,999',                price: '799',                savings: '₹1,200',                discount: '60%',                accentColor: '#8b5cf6',                accentSecondary: '#6366f1',                demoUrl: 'https://t.me/YourAnimeFlixDemoChannel', // Demo URL                features: [                    'Auto scrape anime releases 24/7',                    'DriveSeed bypass included',                    'Direct upload to Telegram channel',                    '480p, 720p, 1080p quality support',                    'Movies & Series both supported',                    'Auto thumbnail & caption',                    'Inline button support',                    'Full source code',                    'Free lifetime updates',                    'Telegram support'                ]            },            youtube: {                icon: 'fab fa-youtube',                iconClass: 'youtube',                title: 'YouTube Downloader Bot Source ',                subtitle: 'Telegram youtube Bot NodeJS Script no cookies required',                priceOld: '₹3,499',                price: '999',                savings: '₹900',                discount: '60%',                accentColor: '#ef4444',                accentSecondary: '#dc2626',                demoUrl: 'https://t.me/YoutubeDRM_Bot', // Demo URL                features: [                    'Download any YouTube video',                    'MP3 audio extraction',                    '144p to 4K quality support',                    'Playlist download support',                    'Shorts download support',                    'Fast download speed',                    'Full source code',                    'Free lifetime updates',                    'Telegram support'                ]            }        };
+        // Get ref parameter        function getRefParam() {            const urlParams = new URLSearchParams(window.location.search);            return urlParams.get('ref');        }
+        // Render single product        function renderProduct(productKey) {            const product = products[productKey];            if (!product) return;
+            // Set CSS variables            document.documentElement.style.setProperty('--accent-color', product.accentColor);            document.documentElement.style.setProperty('--accent-secondary', product.accentSecondary);
+            // Update icon            document.getElementById('productIcon').innerHTML = `<i class="${product.icon}"></i>`;            document.getElementById('productIcon').style.background = `linear-gradient(135deg, ${product.accentColor}, ${product.accentSecondary})`;
+            // Update content            document.getElementById('badge').innerHTML = `🔥 ${product.discount} OFF - Limited Time`;            document.getElementById('productTitle').textContent = product.title;            document.getElementById('productSubtitle').textContent = product.subtitle;            document.getElementById('priceOld').textContent = product.priceOld;            document.getElementById('priceValue').textContent = product.price;            document.getElementById('savings').textContent = `You save ${product.savings}!`;
+            // Update buy button color            document.getElementById('buyBtn').style.background = `linear-gradient(135deg, ${product.accentColor} 0%, ${product.accentSecondary} 100%)`;
+            // Update demo button URL            const demoBtn = document.getElementById('demoBtn');            if (product.demoUrl) {                demoBtn.href = product.demoUrl;                demoBtn.classList.remove('hidden');            } else {                demoBtn.classList.add('hidden');            }
+            // Update features            document.getElementById('featuresList').innerHTML = product.features.map(feature =>                 `<li><i class="fas fa-check-circle"></i> ${feature}</li>`            ).join('');
+            // Update features title color            document.querySelector('.features-title').style.color = product.accentColor;
+            // Update page title            document.title = `${product.title} - Buy Now`;        }
+        // Render all products list        function renderAllProducts(activeKey = null) {            const productGrid = document.getElementById('productGrid');                        productGrid.innerHTML = Object.entries(products).map(([key, product]) => `                <div class="product-item ${activeKey === key ? 'active' : ''}">                    <a href="?ref=${key}" style="display: contents; text-decoration: none; color: inherit;">                        <div class="product-item-icon ${product.iconClass}">                            <i class="${product.icon}"></i>                        </div>                        <div class="product-item-info">                            <h4>${product.title}</h4>                            <p>${product.subtitle}</p>                        </div>                    </a>                    <div class="product-item-right">                        <div class="product-item-price">                            <div class="old">${product.priceOld}</div>                            <div class="current">₹${product.price}</div>                        </div>                        ${product.demoUrl ? `                            <a href="${product.demoUrl}" class="product-demo-btn" target="_blank" title="View Demo" onclick="event.stopPropagation();">                                <i class="fas fa-play"></i>                            </a>                        ` : ''}                    </div>                </div>            `).join('');        }
+        // Render default view        function renderDefaultView() {            document.getElementById('priceWrapper').classList.add('hidden');            document.getElementById('buttonsContainer').classList.add('hidden');            document.getElementById('featuresCard').classList.add('hidden');            document.getElementById('badge').classList.add('hidden');
+            document.getElementById('productIcon').innerHTML = '<i class="fas fa-tools"></i>';            document.getElementById('productTitle').textContent = 'Automation Tools';            document.getElementById('productSubtitle').textContent = 'Select a tool to view details & pricing';
+            document.title = 'Automation Tools - Buy Now';
+            renderAllProducts();        }
+        // Initialize        function init() {            const ref = getRefParam();
+            if (ref && products[ref]) {                renderProduct(ref);                renderAllProducts(ref);            } else {                renderDefaultView();                renderAllProducts();            }        }
+        init();    </script>
+</body></html>
+
+Please provide the complete code layout, starting with `package.json`, then `index.js`, and the required React components. Make sure the instructions on how to build the frontend and start the single node server are crystal clear.
