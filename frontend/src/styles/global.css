@@ -3,21 +3,28 @@
 /* ─── CSS Variables ─── */
 :root {
   --bg:           #ffffff;
-  --bg-subtle:    #f9fafb;
-  --bg-muted:     #f3f4f6;
-  --border:       #e5e7eb;
-  --border-muted: #f3f4f6;
-  --text:         #111827;
-  --text-2:       #374151;
-  --text-3:       #6b7280;
-  --text-4:       #9ca3af;
+  --bg-subtle:    #f0f9ff;
+  --bg-muted:     #e0f2fe;
+  --border:       #bae6fd;
+  --border-muted: #e0f2fe;
+  --text:         #0f172a;
+  --text-2:       #1e3a5f;
+  --text-3:       #4b7aa0;
+  --text-4:       #94b8d0;
   --card:         #ffffff;
-  --card-hover:   #f9fafb;
+  --card-hover:   #f0f9ff;
 
-  --accent:       #7c3aed;
-  --accent-2:     #6d28d9;
-  --accent-glow:  rgba(124, 58, 237, 0.15);
-  --accent-text:  #7c3aed;
+  --accent:       #0284c7;
+  --accent-2:     #0369a1;
+  --accent-glow:  rgba(2, 132, 199, 0.12);
+  --accent-text:  #0284c7;
+
+  --blue:         #0284c7;
+  --blue-2:       #0369a1;
+  --blue-bg:      rgba(2, 132, 199, 0.08);
+  --blue-border:  rgba(2, 132, 199, 0.2);
+  --blue-glow:    rgba(2, 132, 199, 0.15);
+
   --green:        #059669;
   --green-bg:     rgba(5, 150, 105, 0.08);
   --green-border: rgba(5, 150, 105, 0.2);
@@ -25,10 +32,10 @@
   --red-bg:       rgba(220, 38, 38, 0.08);
   --red-border:   rgba(220, 38, 38, 0.2);
 
-  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md:    0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
-  --shadow-lg:    0 10px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-xl:    0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.07);
+  --shadow-sm:    0 1px 3px rgba(2,132,199,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 12px rgba(2,132,199,0.10), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg:    0 10px 40px rgba(2,132,199,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-xl:    0 20px 60px rgba(2,132,199,0.14), 0 8px 20px rgba(0,0,0,0.07);
 
   --radius-sm:    6px;
   --radius-md:    10px;
@@ -39,22 +46,28 @@
 
   --font:         'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --transition:   all 0.2s ease;
+
+  --bg-panel:     var(--card);
+  --bg-input:     var(--bg-muted);
 }
 
 [data-theme="dark"] {
-  --bg:           #09090b;
-  --bg-subtle:    #111113;
-  --bg-muted:     #18181b;
-  --border:       #27272a;
-  --border-muted: #1f1f22;
-  --text:         #fafafa;
-  --text-2:       #e4e4e7;
-  --text-3:       #a1a1aa;
-  --text-4:       #71717a;
-  --card:         #111113;
-  --card-hover:   #18181b;
+  --bg:           #0c1a2e;
+  --bg-subtle:    #0f2441;
+  --bg-muted:     #162d4a;
+  --border:       #1e4a72;
+  --border-muted: #163652;
+  --text:         #e0f2fe;
+  --text-2:       #bae6fd;
+  --text-3:       #7ab8d9;
+  --text-4:       #4a7fa0;
+  --card:         #0f2441;
+  --card-hover:   #162d4a;
 
-  --accent-glow:  rgba(124, 58, 237, 0.2);
+  --accent-glow:  rgba(2, 132, 199, 0.2);
+  --blue-bg:      rgba(2, 132, 199, 0.12);
+  --blue-border:  rgba(2, 132, 199, 0.25);
+  --blue-glow:    rgba(2, 132, 199, 0.2);
   --green-bg:     rgba(5, 150, 105, 0.1);
   --green-border: rgba(5, 150, 105, 0.25);
   --red-bg:       rgba(220, 38, 38, 0.1);

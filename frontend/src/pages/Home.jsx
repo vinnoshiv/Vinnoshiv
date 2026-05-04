@@ -132,7 +132,7 @@ export default function Home() {
 
           <div className="hero-pills">
             <span className="hero-pill green"><i className="fas fa-circle-check"></i> One-time payment</span>
-            <span className="hero-pill purple"><i className="fas fa-code"></i> Full source code</span>
+            <span className="hero-pill blue"><i className="fas fa-code"></i> Full source code</span>
             <span className="hero-pill green"><i className="fas fa-rotate"></i> Lifetime updates</span>
             <span className="hero-pill blue"><i className="fab fa-telegram"></i> Instant delivery</span>
           </div>
@@ -268,7 +268,7 @@ export default function Home() {
             <div className="about-visual">
               <div className="about-card-stack">
                 {[
-                  { icon: 'fas fa-tools', iconStyle: { background: 'rgba(124,58,237,0.12)', color: '#7c3aed' }, label: 'Total Products', value: '4+', sub: 'and growing' },
+                  { icon: 'fas fa-tools', iconStyle: { background: 'rgba(2,132,199,0.1)', color: '#0284c7' }, label: 'Total Products', value: '4+', sub: 'and growing' },
                   { icon: 'fas fa-users', iconStyle: { background: 'rgba(5,150,105,0.12)', color: '#059669' }, label: 'Happy Customers', value: '100+', sub: 'across India' },
                   { icon: 'fas fa-rotate', iconStyle: { background: 'rgba(14,165,233,0.12)', color: '#0ea5e9' }, label: 'Updates Shipped', value: '∞', sub: 'lifetime, free' },
                   { icon: 'fas fa-bolt', iconStyle: { background: 'rgba(245,158,11,0.12)', color: '#f59e0b' }, label: 'Avg. Response Time', value: '< 2h', sub: 'support on Telegram' },
@@ -328,9 +328,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-inner">
           <div className="footer-logo">
-            <div className="navbar-logo-icon" style={{ width: 22, height: 22, borderRadius: 5, fontSize: '0.6rem' }}>
-              <i className="fas fa-bolt"></i>
-            </div>
+            <img src="/logo.png" alt="Vinnoshiv" style={{ width: 22, height: 22, borderRadius: 5, objectFit: 'cover', display: 'block', flexShrink: 0 }} />
             Vinnoshiv
           </div>
           <div className="footer-copy">© {new Date().getFullYear()} Vinnoshiv. All rights reserved.</div>

@@ -179,9 +179,9 @@ export default function AdminPanel() {
 
                 <div className="admin-stats-grid">
                   {[
-                    { label:'Total Tools',       value:'4',    sub:'+0 this week',    icon:'fas fa-tools',              cls:'stat-purple', trend:null },
+                    { label:'Total Tools',       value:'4',    sub:'+0 this week',    icon:'fas fa-tools',              cls:'stat-blue', trend:null },
                     { label:'Customers',          value:'100+', sub:'↑ 12 this month', icon:'fas fa-users',              cls:'stat-green',  trend:'up' },
-                    { label:'Revenue',            value:'₹—',   sub:'Manual tracking', icon:'fas fa-indian-rupee-sign',  cls:'stat-blue',   trend:null },
+                    { label:'Revenue',            value:'₹—',   sub:'Manual tracking', icon:'fas fa-indian-rupee-sign',  cls:'stat-sky',    trend:null },
                     { label:'Support Tickets',    value:'2',    sub:'Open right now',  icon:'fas fa-headset',            cls:'stat-amber',  trend:'warn' },
                   ].map(s => (
                     <div className="admin-stat" key={s.label}>
@@ -351,9 +351,9 @@ export default function AdminPanel() {
 
                 <div className="admin-stats-grid" style={{ marginBottom:'1.5rem' }}>
                   {[
-                    { label:'Total Visits',   value:'526',  sub:'This week', icon:'fas fa-eye',          cls:'stat-purple' },
+                    { label:'Total Visits',   value:'526',  sub:'This week', icon:'fas fa-eye',          cls:'stat-blue' },
                     { label:'Total Sales',    value:'41',   sub:'This week', icon:'fas fa-bag-shopping',  cls:'stat-green' },
-                    { label:'Conversion',     value:'7.8%', sub:'Visits→sales', icon:'fas fa-percent',   cls:'stat-blue' },
+                    { label:'Conversion',     value:'7.8%', sub:'Visits→sales', icon:'fas fa-percent',   cls:'stat-sky' },
                     { label:'Avg. Daily',     value:'75',   sub:'Visits/day', icon:'fas fa-chart-line',   cls:'stat-amber' },
                   ].map(s => (
                     <div className="admin-stat" key={s.label}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/AutomationTools.css';
@@ -6,7 +6,6 @@ import '../styles/AutomationTools.css';
 const PRODUCTS = {
   animeflix: {
     icon: 'fas fa-dragon',
-    iconClass: 'animeflix',
     accent: '#7c3aed',
     accentB: '#6d28d9',
     title: 'AnimeFlix Auto Scraper',
@@ -32,7 +31,6 @@ const PRODUCTS = {
   },
   youtube: {
     icon: 'fab fa-youtube',
-    iconClass: 'youtube',
     accent: '#ef4444',
     accentB: '#dc2626',
     title: 'YouTube Downloader Bot',
@@ -58,7 +56,6 @@ const PRODUCTS = {
   },
   instagram: {
     icon: 'fab fa-instagram',
-    iconClass: 'instagram',
     accent: '#f59e0b',
     accentB: '#ec4899',
     title: 'Instagram Auto DM Bot',
@@ -83,7 +80,6 @@ const PRODUCTS = {
   },
   telegram: {
     icon: 'fab fa-telegram',
-    iconClass: 'telegram',
     accent: '#0ea5e9',
     accentB: '#0284c7',
     title: 'Telegram Channel Bot',
@@ -115,28 +111,80 @@ const ICON_STYLES = {
   telegram:  { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)' },
 };
 
+const TRUST_ITEMS = [
+  { icon: 'fas fa-code',     label: 'Full Source Code',  color: '#0284c7' },
+  { icon: 'fas fa-rotate',   label: 'Lifetime Updates',  color: '#059669' },
+  { icon: 'fas fa-bolt',     label: 'Instant Delivery',  color: '#f59e0b' },
+  { icon: 'fas fa-headset',  label: 'Telegram Support',  color: '#0284c7' },
+];
+
 export default function AutomationTools() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { theme, toggle } = useTheme();
-  const ref = searchParams.get('ref');
+  const ref     = searchParams.get('ref');
   const product = ref && PRODUCTS[ref] ? PRODUCTS[ref] : null;
 
+  const [query,  setQuery]  = useState('');
+  const [copied, setCopied] = useState(false);
+  const detailRef = useRef(null);
+
   useEffect(() => {
-    document.title = product ? `${product.title} — Vinnoshiv Tool Store` : 'Tool Store — Vinnoshiv';
+    document.title = product
+      ? `${product.title} — Vinnoshiv Tool Store`
+      : 'Tool Store — Vinnoshiv';
   }, [product]);
 
-  const select = (key) => setSearchParams({ ref: key });
+  const filteredProducts = Object.entries(PRODUCTS).filter(([, p]) =>
+    p.title.toLowerCase().includes(query.toLowerCase()) ||
+    p.sub.toLowerCase().includes(query.toLowerCase())
+  );
+
+  const select = useCallback((key) => {
+    setSearchParams({ ref: key });
+    if (window.innerWidth < 768 && detailRef.current) {
+      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+    }
+  }, [setSearchParams]);
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
     <div className="at-page">
-      {/* Top bar */}
+
+      {/* ── Top Bar ── */}
       <div className="at-topbar">
-        <Link to="/" className="at-topbar-back">
-          <i className="fas fa-arrow-left"></i> Home
-        </Link>
-        <span style={{ color: 'var(--border)', userSelect: 'none' }}>/</span>
-        <span className="at-topbar-title">Tool Store</span>
+        <div className="at-topbar-left">
+          <img src="/logo.png" alt="Vinnoshiv" className="at-topbar-logo" />
+          <Link to="/" className="at-topbar-back">Home</Link>
+          <span className="at-topbar-sep">/</span>
+          <span className="at-topbar-title">Tool Store</span>
+        </div>
+
+        <div className="at-topbar-search">
+          <i className="fas fa-magnifying-glass"></i>
+          <input
+            type="text"
+            placeholder="Search tools…"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            className="at-search-input"
+          />
+          {query && (
+            <button className="at-search-clear" onClick={() => setQuery('')}>
+              <i className="fas fa-xmark"></i>
+            </button>
+          )}
+        </div>
+
         <div className="at-topbar-actions">
+          <Link to="/" className="at-topbar-home">
+            <i className="fas fa-house"></i>
+          </Link>
           <button className="at-theme-btn" onClick={toggle} aria-label="Toggle theme">
             <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
           </button>
@@ -144,17 +192,21 @@ export default function AutomationTools() {
       </div>
 
       <div className="at-layout">
-        {/* ── Sidebar: product list ── */}
+
+        {/* ── Sidebar ── */}
         <div className="at-sidebar">
           <div className="at-sidebar-header">
-            <div className="at-sidebar-label">All Products</div>
-            <div className="at-search">
-              <i className="fas fa-magnifying-glass"></i>
-              <input className="at-search-input" type="text" placeholder="Search store…" readOnly />
-            </div>
+            <span className="at-sidebar-label">All Products</span>
+            <span className="at-sidebar-count">{filteredProducts.length} tools</span>
           </div>
+
           <div className="at-product-list">
-            {Object.entries(PRODUCTS).map(([key, p]) => (
+            {filteredProducts.length === 0 ? (
+              <div className="at-no-results">
+                <i className="fas fa-magnifying-glass"></i>
+                <p>No results for "{query}"</p>
+              </div>
+            ) : filteredProducts.map(([key, p]) => (
               <div
                 key={key}
                 className={`at-product-row${ref === key ? ' active' : ''}`}
@@ -172,24 +224,56 @@ export default function AutomationTools() {
                 </div>
                 <div className="at-row-right">
                   <div className="at-row-price">₹{p.price}</div>
-                  <div className="at-row-old">{p.priceOld}</div>
+                  <div className="at-row-save">Save {p.savings}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* ── Detail panel ── */}
-        <div className="at-detail">
+        {/* ── Detail Panel ── */}
+        <div className="at-detail" ref={detailRef}>
           {!product ? (
             <div className="at-empty-state">
-              <div className="at-empty-icon"><i className="fas fa-store"></i></div>
-              <h3>Browse the Tool Store</h3>
-              <p>Select any product from the list to view pricing, features, and purchase options.</p>
+              <div className="at-empty-top">
+                <div className="at-empty-icon">
+                  <i className="fas fa-store"></i>
+                </div>
+                <h3>Welcome to the Tool Store</h3>
+                <p>Choose any product from the panel to see full details, pricing &amp; features.</p>
+              </div>
+
+              <div className="at-empty-grid">
+                {Object.entries(PRODUCTS).map(([key, p]) => (
+                  <div
+                    key={key}
+                    className="at-empty-card"
+                    onClick={() => select(key)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => e.key === 'Enter' && select(key)}
+                  >
+                    <div className="at-empty-card-icon" style={ICON_STYLES[key]}>
+                      <i className={p.icon}></i>
+                    </div>
+                    <div className="at-empty-card-name">{p.title}</div>
+                    <div className="at-empty-card-price">₹{p.price}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="at-empty-trust">
+                {TRUST_ITEMS.map(t => (
+                  <span className="at-empty-trust-item" key={t.label}>
+                    <i className={t.icon} style={{ color: t.color }}></i> {t.label}
+                  </span>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="at-detail-inner">
-              {/* Header card */}
+
+              {/* ── Section 1: Hero Card ── */}
               <div
                 className="at-product-header"
                 style={{ '--header-accent': `linear-gradient(90deg, ${product.accent}, ${product.accentB})` }}
@@ -203,56 +287,50 @@ export default function AutomationTools() {
                   </div>
                   <div className="at-product-meta">
                     <div className="at-discount-chip">
-                      <i className="fas fa-fire"></i> {product.discount} — Limited Time
+                      <i className="fas fa-tag"></i> {product.discount} — Limited Time
                     </div>
                     <div className="at-product-name">{product.title}</div>
                     <div className="at-product-sub">{product.sub}</div>
                   </div>
                 </div>
 
-                {/* Price block */}
                 <div className="at-price-block">
                   <div className="at-price-left">
                     <div className="at-price-old">{product.priceOld}</div>
                     <div className="at-price-current">₹{product.price}</div>
                     <div className="at-price-note">One-time payment · Lifetime access</div>
                   </div>
-                  <div className="at-price-right">
-                    <div className="at-savings-badge">
-                      <span className="save-label">You save</span>
-                      <span className="save-amount">{product.savings}</span>
-                    </div>
+                  <div className="at-savings-badge">
+                    <span className="save-label">You save</span>
+                    <span className="save-amount">{product.savings}</span>
                   </div>
                 </div>
 
-                {/* CTA */}
                 <div className="at-cta-row">
                   <a
                     href={product.buyUrl}
                     className="at-buy-btn"
                     target="_blank"
                     rel="noreferrer"
-                    style={{ background: `linear-gradient(135deg, ${product.accent}, ${product.accentB})` }}
                   >
                     <i className="fab fa-telegram"></i> Buy Now on Telegram
                   </a>
                   {product.demoUrl && (
-                    <a
-                      href={product.demoUrl}
-                      className="at-demo-btn"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a href={product.demoUrl} className="at-demo-btn" target="_blank" rel="noreferrer">
                       <i className="fas fa-play"></i> Demo
                     </a>
                   )}
+                  <button className={`at-share-btn ${copied ? 'copied' : ''}`} onClick={handleShare}>
+                    <i className={copied ? 'fas fa-check' : 'fas fa-link'}></i>
+                    {copied ? 'Copied!' : 'Share'}
+                  </button>
                 </div>
               </div>
 
-              {/* Features */}
+              {/* ── Section 2: Features Grid ── */}
               <div className="at-features-card">
                 <div className="at-features-header">
-                  <i className="fas fa-circle-check" style={{ color: 'var(--green)', fontSize: '0.875rem' }}></i>
+                  <i className="fas fa-circle-check"></i>
                   <h3>What's Included</h3>
                   <span className="at-features-count">{product.features.length} features</span>
                 </div>
@@ -265,32 +343,36 @@ export default function AutomationTools() {
                 </div>
               </div>
 
-              {/* Trust row */}
+              {/* ── Section 3: Trust Cards ── */}
               <div className="at-trust-row">
-                {[
-                  { icon: 'fas fa-code', label: 'Full source code' },
-                  { icon: 'fas fa-rotate', label: 'Lifetime updates' },
-                  { icon: 'fas fa-bolt', label: 'Instant delivery' },
-                  { icon: 'fas fa-headset', label: 'Telegram support' },
-                ].map(t => (
-                  <div className="at-trust-item" key={t.label}>
-                    <i className={t.icon}></i> {t.label}
+                {TRUST_ITEMS.map(t => (
+                  <div className="at-trust-card" key={t.label}>
+                    <div className="at-trust-icon" style={{ color: t.color, background: `${t.color}14` }}>
+                      <i className={t.icon}></i>
+                    </div>
+                    <span>{t.label}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Footer */}
+              {/* ── Section 4: Footer CTA ── */}
               <div className="at-footer">
-                <span className="at-footer-text">Questions before buying?</span>
-                <a
-                  href="https://telegram.me/shivamnox"
-                  className="at-footer-link"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <i className="fab fa-telegram"></i> Chat @shivamnox
-                </a>
+                <Link to="/tools/automation" className="at-footer-back">
+                  <i className="fas fa-arrow-left"></i> All tools
+                </Link>
+                <div className="at-footer-right">
+                  <span className="at-footer-text">Questions before buying?</span>
+                  <a
+                    href="https://telegram.me/shivamnox"
+                    className="at-footer-link"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <i className="fab fa-telegram"></i> Chat @shivamnox
+                  </a>
+                </div>
               </div>
+
             </div>
           )}
         </div>
