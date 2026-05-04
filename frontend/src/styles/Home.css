@@ -39,13 +39,10 @@
 .navbar-logo-icon {
   width: 28px;
   height: 28px;
-  background: var(--accent);
   border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: #fff;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
 }
 
 .navbar-links {

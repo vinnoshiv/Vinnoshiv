@@ -38,7 +38,7 @@ export default function AdminLogin() {
       <div className="login-card">
         <div className="login-header">
           <div className="login-logo-wrap">
-            <i className="fas fa-shield-halved"></i>
+            <img src="/logo.png" alt="Vinnoshiv" style={{ width:40, height:40, borderRadius:10, objectFit:'cover' }} />
           </div>
           <h1>Sign in to Admin</h1>
           <p>Vinnoshiv Dashboard</p>

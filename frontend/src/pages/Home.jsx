@@ -68,7 +68,7 @@ export default function Home() {
       <nav className="navbar">
         <div className="navbar-inner">
           <Link to="/" className="navbar-logo">
-            <div className="navbar-logo-icon"><i className="fas fa-bolt"></i></div>
+            <img src="/logo.png" alt="Vinnoshiv" className="navbar-logo-icon" />
             Vinnoshiv
           </Link>
 
