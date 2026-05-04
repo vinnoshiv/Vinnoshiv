@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "V0ZQH983V-nZAtpqjYGdi"
+uri = "file://CURSOR_PROMPT.md"
+type = "text"
+title = "Vinnoshiv — Cursor Prompt (Blue/Green/White Redesign)"
