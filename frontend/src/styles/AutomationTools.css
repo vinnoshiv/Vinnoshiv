@@ -406,7 +406,7 @@
 
 /* Hero Card */
 .at-product-header {
-  background: linear-gradient(145deg, var(--bg-subtle) 0%, var(--card) 100%);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-2xl);
   padding: 2rem;
@@ -414,6 +414,11 @@
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+}
+
+[data-theme="dark"] .at-product-header {
+  background: linear-gradient(145deg, #1a1a20 0%, #111113 100%);
+  border-color: #2e2e33;
 }
 
 .at-product-header::before {
@@ -475,7 +480,7 @@
 
 /* Price block */
 .at-price-block {
-  background: var(--bg);
+  background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: 1.25rem 1.5rem;
@@ -571,15 +576,16 @@
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 600;
-  background: var(--bg);
+  background: var(--bg-muted);
   border: 1px solid var(--border);
   color: var(--text-2);
   text-decoration: none;
   transition: var(--transition);
 }
 .at-demo-btn:hover {
-  background: var(--bg-muted);
+  background: var(--card-hover);
   color: var(--text);
+  border-color: var(--accent);
   transform: translateY(-1px);
 }
 
@@ -593,14 +599,14 @@
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 600;
-  background: var(--bg);
+  background: var(--bg-muted);
   border: 1px solid var(--border);
   color: var(--text-2);
   cursor: pointer;
   transition: var(--transition);
   font-family: var(--font);
 }
-.at-share-btn:hover { background: var(--bg-muted); color: var(--text); }
+.at-share-btn:hover { background: var(--card-hover); color: var(--text); border-color: var(--accent); }
 .at-share-btn.copied { color: var(--green); border-color: var(--green-border); background: var(--green-bg); }
 
 /* ── Features Card ── */
