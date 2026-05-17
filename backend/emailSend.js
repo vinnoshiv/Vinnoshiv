@@ -11,16 +11,22 @@ const getInbox = async (req, res) => {
     const { ImapFlow } = require("imapflow");
     const { simpleParser } = require("mailparser");
 
-    const client = new ImapFlow({
-      host: "imap.gmail.com",
-      port: 993,
-      secure: true,
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
-      },
-      logger: false,
-    });
+const client = new ImapFlow({
+  host: "imap.gmail.com",
+  port: 993,
+  secure: true,
+
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+
+  logger: false,
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
 
     await client.connect();
     const lock = await client.getMailboxLock("INBOX");
