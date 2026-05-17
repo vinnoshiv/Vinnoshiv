@@ -1,382 +1,793 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { useTheme } from '../context/ThemeContext';
-import '../styles/AutomationTools.css';
+// AutomationTools.jsx
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
+import "../styles/AutomationTools.css";
 
-const PRODUCTS = {
-  animeflix: {
-    icon: 'fas fa-dragon',
-    accent: '#7c3aed',
-    accentB: '#6d28d9',
-    title: 'AnimeFlix Auto Scraper',
-    sub: 'Telegram Auto Uploader Bot',
-    priceOld: '₹1,999',
-    price: '799',
-    savings: '₹1,200',
-    discount: '60% OFF',
-    buyUrl: 'https://telegram.me/shivamnox',
-    demoUrl: 'https://t.me/YourAnimeFlixDemoChannel',
-    features: [
-      'Auto scrape anime releases 24/7',
-      'DriveSeed bypass included',
-      'Direct upload to Telegram channel',
-      '480p, 720p, 1080p quality',
-      'Movies & Series both supported',
-      'Auto thumbnail & caption',
-      'Inline button support',
-      'Full source code',
-      'Free lifetime updates',
-      'Telegram support',
-    ],
-  },
-  youtube: {
-    icon: 'fab fa-youtube',
-    accent: '#ef4444',
-    accentB: '#dc2626',
-    title: 'YouTube Downloader Bot',
-    sub: 'NodeJS Telegram Bot — no cookies required',
-    priceOld: '₹3,499',
-    price: '999',
-    savings: '₹2,500',
-    discount: '71% OFF',
-    buyUrl: 'https://telegram.me/shivamnox',
-    demoUrl: 'https://t.me/YoutubeDRM_Bot',
-    features: [
-      'Download any YouTube video',
-      'MP3 audio extraction',
-      '144p to 4K quality',
-      'Playlist download support',
-      'Shorts download support',
-      'No cookies required',
-      'Fast download speed',
-      'Full source code',
-      'Free lifetime updates',
-      'Telegram support',
-    ],
-  },
-  instagram: {
-    icon: 'fab fa-instagram',
-    accent: '#f59e0b',
-    accentB: '#ec4899',
-    title: 'Instagram Auto DM Bot',
-    sub: 'Auto DM & Follower Growth Tool',
-    priceOld: '₹1,499',
-    price: '699',
-    savings: '₹800',
-    discount: '53% OFF',
-    buyUrl: 'https://telegram.me/shivamnox',
-    demoUrl: '',
-    features: [
-      'Auto DM new followers',
-      'Scheduled story reactions',
-      'Comment automation',
-      'Hashtag targeting',
-      'Safe rate-limiting built-in',
-      'Multi-account support',
-      'Full source code',
-      'Free lifetime updates',
-      'Telegram support',
-    ],
-  },
-  telegram: {
-    icon: 'fab fa-telegram',
-    accent: '#0ea5e9',
-    accentB: '#0284c7',
-    title: 'Telegram Channel Bot',
-    sub: 'Auto-post, Schedule & Manage Your Channel',
-    priceOld: '₹999',
-    price: '599',
-    savings: '₹400',
-    discount: '40% OFF',
-    buyUrl: 'https://telegram.me/shivamnox',
-    demoUrl: '',
-    features: [
-      'Scheduled auto-posting',
-      'RSS feed to channel',
-      'Image & video support',
-      'Inline buttons on posts',
-      'Member count tracker',
-      'Custom caption templates',
-      'Full source code',
-      'Free lifetime updates',
-      'Telegram support',
-    ],
-  },
+/* ── helpers ── */
+function formatPrice(raw) {
+  if (!raw) return "₹0";
+  const cleaned = String(raw)
+    .replace(/₹|Rs\.?|INR|inr/gi, "")
+    .replace(/[^0-9.]/g, "");
+  const num = parseFloat(cleaned);
+  if (isNaN(num)) return "₹0";
+  return `₹${num.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+}
+
+function computeDiscount(oldRaw, curRaw) {
+  if (!oldRaw || !curRaw) return null;
+  const old = parseFloat(String(oldRaw).replace(/[^0-9.]/g, ""));
+  const cur = parseFloat(String(curRaw).replace(/[^0-9.]/g, ""));
+  if (!old || !cur || old <= cur) return null;
+  return `${Math.round(((old - cur) / old) * 100)}%`;
+}
+
+function computeSavings(oldRaw, curRaw) {
+  if (!oldRaw || !curRaw) return null;
+  const old = parseFloat(String(oldRaw).replace(/[^0-9.]/g, ""));
+  const cur = parseFloat(String(curRaw).replace(/[^0-9.]/g, ""));
+  if (!old || !cur || old <= cur) return null;
+  return `₹${(old - cur).toLocaleString("en-IN")}`;
+}
+
+const CATEGORY_ICONS = {
+  automation: "fas fa-robot",
+  bot: "fab fa-telegram",
+  scraper: "fas fa-spider",
+  downloader: "fas fa-download",
+  tool: "fas fa-wrench",
 };
 
-const ICON_STYLES = {
-  animeflix: { background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' },
-  youtube:   { background: 'linear-gradient(135deg, #ef4444, #dc2626)' },
-  instagram: { background: 'linear-gradient(135deg, #f59e0b, #ec4899)' },
-  telegram:  { background: 'linear-gradient(135deg, #0ea5e9, #0284c7)' },
-};
+function getCategoryIcon(cat) {
+  if (!cat) return "fas fa-cube";
+  const k = cat.toLowerCase();
+  for (const [key, val] of Object.entries(CATEGORY_ICONS)) {
+    if (k.includes(key)) return val;
+  }
+  return "fas fa-cube";
+}
 
 const TRUST_ITEMS = [
-  { icon: 'fas fa-code',     label: 'Full Source Code',  color: '#0284c7' },
-  { icon: 'fas fa-rotate',   label: 'Lifetime Updates',  color: '#059669' },
-  { icon: 'fas fa-bolt',     label: 'Instant Delivery',  color: '#f59e0b' },
-  { icon: 'fas fa-headset',  label: 'Telegram Support',  color: '#0284c7' },
+  { icon: "fas fa-code", label: "Full Source Code", color: "#0284c7" },
+  { icon: "fas fa-rotate", label: "Lifetime Updates", color: "#059669" },
+  { icon: "fas fa-bolt", label: "Instant Delivery", color: "#f59e0b" },
+  { icon: "fab fa-telegram", label: "Telegram Support", color: "#8b5cf6" },
 ];
 
+/* ════════════════════════════════════════════════════════════════
+   ROOT
+════════════════════════════════════════════════════════════════ */
 export default function AutomationTools() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { theme, toggle } = useTheme();
-  const ref     = searchParams.get('ref');
-  const product = ref && PRODUCTS[ref] ? PRODUCTS[ref] : null;
-
-  const [query,  setQuery]  = useState('');
-  const [copied, setCopied] = useState(false);
+  const ref = searchParams.get("ref");
   const detailRef = useRef(null);
+
+  const [tools, setTools] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [activeCat, setActiveCat] = useState("all");
+
+  useEffect(() => {
+    fetch("/api/tools")
+      .then((r) => r.json())
+      .then((data) =>
+        setTools(
+          Array.isArray(data)
+            ? data.filter((t) => t.status !== "Inactive")
+            : [],
+        ),
+      )
+      .catch(() => setTools([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const product = ref ? tools.find((t) => t.ref === ref) : null;
 
   useEffect(() => {
     document.title = product
-      ? `${product.title} — Vinnoshiv Tool Store`
-      : 'Tool Store — Vinnoshiv';
+      ? `${product.name} — Vinnoshiv Tool Store`
+      : "Vinnoshiv — Automation Tool Store";
   }, [product]);
 
-  const filteredProducts = Object.entries(PRODUCTS).filter(([, p]) =>
-    p.title.toLowerCase().includes(query.toLowerCase()) ||
-    p.sub.toLowerCase().includes(query.toLowerCase())
+  useEffect(() => {
+    if (product)
+      fetch(`/api/tools/${product._id}/view`, { method: "POST" }).catch(
+        () => {},
+      );
+  }, [product?._id]);
+
+  const categories = useMemo(() => {
+    const set = new Set(tools.map((t) => t.category || "automation"));
+    return ["all", ...Array.from(set)];
+  }, [tools]);
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase();
+    return tools.filter((t) => {
+      const matchQ =
+        !q ||
+        t.name.toLowerCase().includes(q) ||
+        (t.category || "").toLowerCase().includes(q);
+      const matchC =
+        activeCat === "all" ||
+        (t.category || "automation").toLowerCase() === activeCat.toLowerCase();
+      return matchQ && matchC;
+    });
+  }, [tools, query, activeCat]);
+
+  const select = useCallback(
+    (toolRef) => {
+      setSearchParams({ ref: toolRef });
+      if (window.innerWidth < 1024 && detailRef.current) {
+        setTimeout(
+          () => detailRef.current?.scrollIntoView({ behavior: "smooth" }),
+          50,
+        );
+      }
+    },
+    [setSearchParams],
   );
 
-  const select = useCallback((key) => {
-    setSearchParams({ ref: key });
-    if (window.innerWidth < 768 && detailRef.current) {
-      setTimeout(() => detailRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
-    }
-  }, [setSearchParams]);
-
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
+    const url = product
+      ? `${window.location.origin}${window.location.pathname}?ref=${product.ref}`
+      : window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 1800);
     });
   };
 
   return (
-    <div className="at-page">
+    <div className={`at-root ${theme === "dark" ? "at-dark" : ""}`}>
+      <Topbar
+        theme={theme}
+        toggleTheme={toggle}
+        query={query}
+        setQuery={setQuery}
+      />
 
-      {/* ── Top Bar ── */}
-      <div className="at-topbar">
-        <div className="at-topbar-left">
-          <img src="/logo.png" alt="Vinnoshiv" className="at-topbar-logo" />
-          <Link to="/" className="at-topbar-back">Home</Link>
-          <span className="at-topbar-sep">/</span>
-          <span className="at-topbar-title">Tool Store</span>
+      <div className="at-layout">
+        <Sidebar
+          categories={categories}
+          activeCat={activeCat}
+          setActiveCat={setActiveCat}
+          tools={filtered}
+          loading={loading}
+          selectedRef={ref}
+          onSelect={select}
+        />
+        <main className="at-main" ref={detailRef}>
+          {product ? (
+            <ProductDetail
+              tool={product}
+              onShare={handleShare}
+              copied={copied}
+              onBack={() => setSearchParams({})}
+            />
+          ) : (
+            <EmptyState
+              tools={filtered}
+              total={tools.length}
+              loading={loading}
+              onSelect={select}
+            />
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TOP BAR
+════════════════════════════════════════════════════════════════ */
+function Topbar({ theme, toggleTheme, query, setQuery }) {
+  return (
+    <header className="at-topbar">
+      {/* Brand */}
+      <div className="at-brand">
+        <div className="at-brand-icon">
+          <i className="fas fa-bolt"></i>
+        </div>
+        <div className="at-brand-text">
+          <span className="at-brand-name">Vinnoshiv</span>
+          <span className="at-brand-sub">Tool Store</span>
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="at-search-wrap">
+        <i className="fas fa-magnifying-glass at-search-ico"></i>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search tools, categories…"
+          className="at-search-input"
+          aria-label="Search tools"
+        />
+        {query ? (
+          <button
+            className="at-search-clear"
+            onClick={() => setQuery("")}
+            aria-label="Clear"
+          >
+            <i className="fas fa-xmark"></i>
+          </button>
+        ) : (
+          <kbd className="at-search-kbd">⌘K</kbd>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="at-topbar-actions">
+        <button className="at-icon-btn at-notif-btn" aria-label="Notifications">
+          <i className="fas fa-bell"></i>
+          <span className="at-notif-dot"></span>
+        </button>
+        <button
+          className="at-icon-btn"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+        >
+          <i className={theme === "dark" ? "fas fa-sun" : "fas fa-moon"}></i>
+        </button>
+        {/*<div className="at-avatar">VS</div>*/}
+      </div>
+    </header>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════════════════════════════ */
+function Sidebar({
+  categories,
+  activeCat,
+  setActiveCat,
+  tools,
+  loading,
+  selectedRef,
+  onSelect,
+}) {
+  return (
+    <aside className="at-sidebar">
+      {/* Header */}
+      <div className="at-sb-head">
+        <div className="at-sb-head-row">
+          <div className="at-sb-title-wrap">
+            <span className="at-sb-title">Products</span>
+            <span className="at-sb-count">{tools.length}</span>
+          </div>
+          <button className="at-sb-menu-btn">
+            <i className="fas fa-ellipsis"></i>
+          </button>
+        </div>
+        {/* Category tabs */}
+        <div className="at-cat-tabs">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setActiveCat(c)}
+              className={`at-cat-tab ${activeCat === c ? "active" : ""}`}
+            >
+              {c === "all" ? "All" : c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="at-sb-list">
+        {loading ? (
+          Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+        ) : tools.length === 0 ? (
+          <div className="at-sb-empty">
+            <div className="at-sb-empty-icon">
+              <i className="fas fa-magnifying-glass"></i>
+            </div>
+            <p>No tools match your search</p>
+          </div>
+        ) : (
+          tools.map((t) => (
+            <SidebarRow
+              key={t._id}
+              tool={t}
+              active={selectedRef === t.ref}
+              onClick={() => onSelect(t.ref)}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="at-sb-foot">
+        <div className="at-sb-foot-left">
+          <i className="fas fa-shield-halved" style={{ color: "#10b981" }}></i>
+          <span>Secure · Trusted</span>
+        </div>
+        <span className="at-sb-version">v2.4</span>
+      </div>
+    </aside>
+  );
+}
+
+function SidebarRow({ tool, active, onClick }) {
+  const disc = computeDiscount(tool.oldPrice, tool.price);
+  return (
+    <button className={`at-sb-row ${active ? "active" : ""}`} onClick={onClick}>
+      {active && <span className="at-sb-row-bar"></span>}
+      <div
+        className="at-sb-row-icon"
+        style={{
+          background: `linear-gradient(135deg, ${tool.color}, ${tool.color}99)`,
+        }}
+      >
+        <i className={tool.icon}></i>
+      </div>
+      <div className="at-sb-row-info">
+        <div className={`at-sb-row-name ${active ? "active" : ""}`}>
+          {tool.name}
+        </div>
+        <div className="at-sb-row-meta">
+          <span className="at-sb-row-cat">
+            <i className={getCategoryIcon(tool.category)}></i>
+            {tool.category || "tool"}
+          </span>
+          {tool.features?.length > 0 && (
+            <span className="at-sb-row-feats">{tool.features.length}</span>
+          )}
+        </div>
+      </div>
+      <div className="at-sb-row-right">
+        <div className="at-sb-row-price">{formatPrice(tool.price)}</div>
+        {disc && <div className="at-sb-row-disc">{disc} OFF</div>}
+      </div>
+    </button>
+  );
+}
+
+function SkeletonRow() {
+  return (
+    <div className="at-skel-row">
+      <div className="at-skel-icon"></div>
+      <div className="at-skel-info">
+        <div className="at-skel-line at-skel-long"></div>
+        <div className="at-skel-line at-skel-short"></div>
+      </div>
+      <div className="at-skel-price"></div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   EMPTY STATE
+════════════════════════════════════════════════════════════════ */
+function EmptyState({ tools, total, loading, onSelect }) {
+  const totalSavings = tools.reduce((acc, t) => {
+    const s = computeSavings(t.oldPrice, t.price);
+    if (!s) return acc;
+    return acc + parseFloat(s.replace(/[^0-9.]/g, ""));
+  }, 0);
+  const discountedCount = tools.filter((t) =>
+    computeDiscount(t.oldPrice, t.price),
+  ).length;
+
+  const stats = [
+    {
+      label: "Total Tools",
+      value: String(total),
+      icon: "fas fa-cube",
+      grad: "at-grad-blue",
+      trend: "+2 this week",
+    },
+    {
+      label: "Active Deals",
+      value: String(discountedCount),
+      icon: "fas fa-fire",
+      grad: "at-grad-orange",
+      trend: "Limited time",
+    },
+    {
+      label: "Max Savings",
+      value: `₹${totalSavings.toLocaleString("en-IN")}`,
+      icon: "fas fa-piggy-bank",
+      grad: "at-grad-green",
+      trend: "Across all deals",
+    },
+    {
+      label: "Happy Users",
+      value: "12.4K",
+      icon: "fas fa-users",
+      grad: "at-grad-purple",
+      trend: "+18% growth",
+    },
+  ];
+
+  return (
+    <div className="at-empty-wrap">
+      {/* Hero banner */}
+      <div className="at-hero">
+        <div className="at-hero-blob at-hero-blob-1"></div>
+        <div className="at-hero-blob at-hero-blob-2"></div>
+        <div className="at-hero-inner">
+          <div className="at-hero-live-badge">
+            <span className="at-hero-dot"></span>
+            LIVE · {total} Tools Available
+          </div>
+          <h1 className="at-hero-title">
+            Welcome to the
+            <br />
+            <span className="at-hero-gradient-text">Vinnoshiv Tool Store</span>
+          </h1>
+          <p className="at-hero-sub">
+            Professional automation tools, bots &amp; scripts crafted for
+            developers, marketers &amp; creators. One-time payment · lifetime
+            access.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="at-stats-grid">
+        {stats.map((s) => (
+          <div className="at-stat-card" key={s.label}>
+            <div className={`at-stat-icon ${s.grad}`}>
+              <i className={s.icon}></i>
+            </div>
+            <div className="at-stat-label">{s.label}</div>
+            <div className="at-stat-value">{s.value}</div>
+            <div className="at-stat-trend">{s.trend}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Browse tools */}
+      <div className="at-browse-section">
+        <div className="at-browse-header">
+          <div>
+            <h2 className="at-browse-title">Browse All Tools</h2>
+            <p className="at-browse-sub">Click any card to view full details</p>
+          </div>
+          <span className="at-browse-count">{tools.length} available</span>
         </div>
 
-        <div className="at-topbar-search">
-          <i className="fas fa-magnifying-glass"></i>
-          <input
-            type="text"
-            placeholder="Search tools…"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            className="at-search-input"
-          />
-          {query && (
-            <button className="at-search-clear" onClick={() => setQuery('')}>
-              <i className="fas fa-xmark"></i>
-            </button>
+        {loading ? (
+          <div className="at-tools-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="at-tools-grid">
+            {tools.map((t) => (
+              <ToolCard key={t._id} tool={t} onClick={() => onSelect(t.ref)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Trust row */}
+      <div className="at-trust-row">
+        {TRUST_ITEMS.map((tr) => (
+          <div className="at-trust-item" key={tr.label}>
+            <div
+              className="at-trust-icon"
+              style={{ color: tr.color, background: `${tr.color}18` }}
+            >
+              <i className={tr.icon}></i>
+            </div>
+            <span className="at-trust-label">{tr.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ToolCard({ tool, onClick }) {
+  const disc = computeDiscount(tool.oldPrice, tool.price);
+  return (
+    <button className="at-tool-card" onClick={onClick}>
+      {disc && (
+        <span className="at-card-badge at-card-badge-green">{disc} OFF</span>
+      )}
+      {tool.status === "Coming Soon" && (
+        <span className="at-card-badge at-card-badge-amber">SOON</span>
+      )}
+
+      <div
+        className="at-card-icon"
+        style={{
+          background: `linear-gradient(135deg, ${tool.color}, ${tool.color}aa)`,
+          boxShadow: `0 8px 20px -6px ${tool.color}60`,
+        }}
+      >
+        <i className={tool.icon}></i>
+      </div>
+
+      <div className="at-card-cat">{tool.category || "tool"}</div>
+      <h3 className="at-card-name">{tool.name}</h3>
+
+      <div className="at-card-footer">
+        <div className="at-card-pricing">
+          <div className="at-card-price-row">
+            <span className="at-card-price">{formatPrice(tool.price)}</span>
+            {tool.oldPrice && (
+              <span className="at-card-old">{formatPrice(tool.oldPrice)}</span>
+            )}
+          </div>
+          <div className="at-card-note">One-time · Lifetime</div>
+        </div>
+        <i className="fas fa-arrow-right at-card-arrow"></i>
+      </div>
+    </button>
+  );
+}
+
+function SkeletonCard() {
+  return (
+    <div className="at-skel-card">
+      <div className="at-skel-card-icon"></div>
+      <div
+        className="at-skel-line at-skel-long"
+        style={{ marginBottom: "0.5rem" }}
+      ></div>
+      <div className="at-skel-line at-skel-short"></div>
+      <div className="at-skel-card-footer">
+        <div className="at-skel-price-big"></div>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PRODUCT DETAIL
+════════════════════════════════════════════════════════════════ */
+function ProductDetail({ tool, onShare, copied, onBack }) {
+  const disc = computeDiscount(tool.oldPrice, tool.price);
+  const savings = computeSavings(tool.oldPrice, tool.price);
+
+  return (
+    <div className="at-detail-wrap">
+      {/* Breadcrumb */}
+      <div className="at-bc">
+        <button className="at-bc-back" onClick={onBack}>
+          <i className="fas fa-arrow-left"></i>
+          All Tools
+        </button>
+        <i className="fas fa-chevron-right at-bc-sep"></i>
+        <span className="at-bc-cat">{tool.category}</span>
+        <i className="fas fa-chevron-right at-bc-sep"></i>
+        <span className="at-bc-cur">{tool.name}</span>
+      </div>
+
+      {/* Hero Card */}
+      <div className="at-prod-card">
+        {/* Accent top bar */}
+        <div
+          className="at-prod-accent"
+          style={{
+            background: `linear-gradient(90deg, ${tool.color}, ${tool.color}22)`,
+          }}
+        ></div>
+        {/* Glow blob */}
+        <div className="at-prod-glow" style={{ background: tool.color }}></div>
+
+        <div className="at-prod-top">
+          {/* Icon */}
+          <div className="at-prod-icon-wrap">
+            <div
+              className="at-prod-icon"
+              style={{
+                background: `linear-gradient(135deg, ${tool.color}, ${tool.color}aa)`,
+                boxShadow: `0 20px 40px -10px ${tool.color}60`,
+              }}
+            >
+              <i className={tool.icon}></i>
+            </div>
+            {tool.status === "Coming Soon" && (
+              <span className="at-prod-soon">SOON</span>
+            )}
+          </div>
+
+          {/* Meta */}
+          <div className="at-prod-meta">
+            <div className="at-prod-chips">
+              {disc && (
+                <span className="at-chip at-chip-green">
+                  <i className="fas fa-fire"></i> {disc} OFF
+                </span>
+              )}
+              <span className="at-chip at-chip-slate">
+                <i
+                  className={getCategoryIcon(tool.category)}
+                  style={{ color: "#0ea5e9" }}
+                ></i>
+                {tool.category}
+              </span>
+            </div>
+            <h1 className="at-prod-name">{tool.name}</h1>
+            <div className="at-prod-stats">
+              {tool.views > 0 && (
+                <span>
+                  <i className="fas fa-eye"></i>
+                  {tool.views.toLocaleString("en-IN")} views
+                </span>
+              )}
+              {tool.features?.length > 0 && (
+                <span>
+                  <i className="fas fa-list-check"></i>
+                  {tool.features.length} features
+                </span>
+              )}
+              <span>
+                <i className="fas fa-bolt"></i>Instant delivery
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Price block */}
+        <div className="at-price-block">
+          <div className="at-price-left">
+            {tool.oldPrice && (
+              <div className="at-price-old-row">
+                <span className="at-price-old">
+                  {formatPrice(tool.oldPrice)}
+                </span>
+                {disc && <span className="at-price-off-tag">{disc} off</span>}
+              </div>
+            )}
+            <div className="at-price-main">
+              <span className="at-price-big">{formatPrice(tool.price)}</span>
+              <span className="at-price-inr">INR</span>
+            </div>
+            <div className="at-price-note">
+              <i className="fas fa-infinity"></i>
+              One-time · Lifetime access
+            </div>
+          </div>
+          {savings && (
+            <div className="at-savings-box">
+              <i className="fas fa-piggy-bank"></i>
+              <div>
+                <div className="at-savings-label">You save</div>
+                <div className="at-savings-val">{savings}</div>
+              </div>
+            </div>
           )}
         </div>
 
-        <div className="at-topbar-actions">
-          <Link to="/" className="at-topbar-home">
-            <i className="fas fa-house"></i>
-          </Link>
-          <button className="at-theme-btn" onClick={toggle} aria-label="Toggle theme">
-            <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
+        {/* CTA buttons */}
+        <div className="at-cta-row">
+          <a
+            href={tool.buyLink || "https://telegram.me/shivamnox"}
+            target="_blank"
+            rel="noreferrer"
+            className="at-btn-buy"
+          >
+            <i className="fab fa-telegram"></i>
+            Buy on Telegram
+          </a>
+          {tool.demoUrl && (
+            <a
+              href={tool.demoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="at-btn-secondary"
+            >
+              <i className="fas fa-play"></i>
+              Demo
+            </a>
+          )}
+          <button
+            onClick={onShare}
+            className={`at-btn-secondary ${copied ? "at-btn-copied" : ""}`}
+          >
+            <i className={copied ? "fas fa-check" : "fas fa-link"}></i>
+            {copied ? "Copied!" : "Share"}
           </button>
         </div>
       </div>
 
-      <div className="at-layout">
+      {/* Description */}
+      {tool.description && (
+        <SectionCard
+          icon="fas fa-align-left"
+          iconColor="#0284c7"
+          title="About This Tool"
+        >
+          <div
+            className="at-desc-html"
+            dangerouslySetInnerHTML={{ __html: tool.description }}
+          />
+        </SectionCard>
+      )}
 
-        {/* ── Sidebar ── */}
-        <div className="at-sidebar">
-          <div className="at-sidebar-header">
-            <span className="at-sidebar-label">All Products</span>
-            <span className="at-sidebar-count">{filteredProducts.length} tools</span>
-          </div>
-
-          <div className="at-product-list">
-            {filteredProducts.length === 0 ? (
-              <div className="at-no-results">
-                <i className="fas fa-magnifying-glass"></i>
-                <p>No results for "{query}"</p>
-              </div>
-            ) : filteredProducts.map(([key, p]) => (
-              <div
-                key={key}
-                className={`at-product-row${ref === key ? ' active' : ''}`}
-                onClick={() => select(key)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && select(key)}
-              >
-                <div className="at-row-icon" style={ICON_STYLES[key]}>
-                  <i className={p.icon}></i>
+      {/* Features */}
+      {tool.features?.length > 0 && (
+        <SectionCard
+          icon="fas fa-circle-check"
+          iconColor="#059669"
+          title="What's Included"
+          badge={`${tool.features.length} features`}
+        >
+          <div className="at-features-grid">
+            {tool.features.map((f, i) => (
+              <div className="at-feature-item" key={i}>
+                <div className="at-feature-check">
+                  <i className="fas fa-check"></i>
                 </div>
-                <div className="at-row-info">
-                  <div className="at-row-name">{p.title}</div>
-                  <div className="at-row-sub">{p.sub}</div>
-                </div>
-                <div className="at-row-right">
-                  <div className="at-row-price">₹{p.price}</div>
-                  <div className="at-row-save">Save {p.savings}</div>
-                </div>
+                <span>{f}</span>
               </div>
             ))}
           </div>
-        </div>
+        </SectionCard>
+      )}
 
-        {/* ── Detail Panel ── */}
-        <div className="at-detail" ref={detailRef}>
-          {!product ? (
-            <div className="at-empty-state">
-              <div className="at-empty-top">
-                <div className="at-empty-icon">
-                  <i className="fas fa-store"></i>
-                </div>
-                <h3>Welcome to the Tool Store</h3>
-                <p>Choose any product from the panel to see full details, pricing &amp; features.</p>
-              </div>
-
-              <div className="at-empty-grid">
-                {Object.entries(PRODUCTS).map(([key, p]) => (
-                  <div
-                    key={key}
-                    className="at-empty-card"
-                    onClick={() => select(key)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={e => e.key === 'Enter' && select(key)}
-                  >
-                    <div className="at-empty-card-icon" style={ICON_STYLES[key]}>
-                      <i className={p.icon}></i>
-                    </div>
-                    <div className="at-empty-card-name">{p.title}</div>
-                    <div className="at-empty-card-price">₹{p.price}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="at-empty-trust">
-                {TRUST_ITEMS.map(t => (
-                  <span className="at-empty-trust-item" key={t.label}>
-                    <i className={t.icon} style={{ color: t.color }}></i> {t.label}
-                  </span>
-                ))}
-              </div>
+      {/* Trust */}
+      <div className="at-trust-row">
+        {TRUST_ITEMS.map((tr) => (
+          <div className="at-trust-item at-trust-item-col" key={tr.label}>
+            <div
+              className="at-trust-icon"
+              style={{ color: tr.color, background: `${tr.color}18` }}
+            >
+              <i className={tr.icon}></i>
             </div>
-          ) : (
-            <div className="at-detail-inner">
+            <span className="at-trust-label">{tr.label}</span>
+          </div>
+        ))}
+      </div>
 
-              {/* ── Section 1: Hero Card ── */}
-              <div
-                className="at-product-header"
-                style={{ '--header-accent': `linear-gradient(90deg, ${product.accent}, ${product.accentB})` }}
-              >
-                <div className="at-product-top">
-                  <div
-                    className="at-product-icon"
-                    style={{ background: `linear-gradient(135deg, ${product.accent}, ${product.accentB})` }}
-                  >
-                    <i className={product.icon}></i>
-                  </div>
-                  <div className="at-product-meta">
-                    <div className="at-discount-chip">
-                      <i className="fas fa-tag"></i> {product.discount} — Limited Time
-                    </div>
-                    <div className="at-product-name">{product.title}</div>
-                    <div className="at-product-sub">{product.sub}</div>
-                  </div>
-                </div>
-
-                <div className="at-price-block">
-                  <div className="at-price-left">
-                    <div className="at-price-old">{product.priceOld}</div>
-                    <div className="at-price-current">₹{product.price}</div>
-                    <div className="at-price-note">One-time payment · Lifetime access</div>
-                  </div>
-                  <div className="at-savings-badge">
-                    <span className="save-label">You save</span>
-                    <span className="save-amount">{product.savings}</span>
-                  </div>
-                </div>
-
-                <div className="at-cta-row">
-                  <a
-                    href={product.buyUrl}
-                    className="at-buy-btn"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <i className="fab fa-telegram"></i> Buy Now on Telegram
-                  </a>
-                  {product.demoUrl && (
-                    <a href={product.demoUrl} className="at-demo-btn" target="_blank" rel="noreferrer">
-                      <i className="fas fa-play"></i> Demo
-                    </a>
-                  )}
-                  <button className={`at-share-btn ${copied ? 'copied' : ''}`} onClick={handleShare}>
-                    <i className={copied ? 'fas fa-check' : 'fas fa-link'}></i>
-                    {copied ? 'Copied!' : 'Share'}
-                  </button>
-                </div>
-              </div>
-
-              {/* ── Section 2: Features Grid ── */}
-              <div className="at-features-card">
-                <div className="at-features-header">
-                  <i className="fas fa-circle-check"></i>
-                  <h3>What's Included</h3>
-                  <span className="at-features-count">{product.features.length} features</span>
-                </div>
-                <div className="at-features-grid">
-                  {product.features.map((f, i) => (
-                    <div className="at-feature-item" key={i}>
-                      <i className="fas fa-check"></i> {f}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ── Section 3: Trust Cards ── */}
-              <div className="at-trust-row">
-                {TRUST_ITEMS.map(t => (
-                  <div className="at-trust-card" key={t.label}>
-                    <div className="at-trust-icon" style={{ color: t.color, background: `${t.color}14` }}>
-                      <i className={t.icon}></i>
-                    </div>
-                    <span>{t.label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* ── Section 4: Footer CTA ── */}
-              <div className="at-footer">
-                <Link to="/tools/automation" className="at-footer-back">
-                  <i className="fas fa-arrow-left"></i> All tools
-                </Link>
-                <div className="at-footer-right">
-                  <span className="at-footer-text">Questions before buying?</span>
-                  <a
-                    href="https://telegram.me/shivamnox"
-                    className="at-footer-link"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <i className="fab fa-telegram"></i> Chat @shivamnox
-                  </a>
-                </div>
-              </div>
-
-            </div>
-          )}
+      {/* Footer */}
+      <div className="at-det-footer">
+        <button className="at-det-back" onClick={onBack}>
+          <i className="fas fa-arrow-left"></i>
+          All Tools
+        </button>
+        <div className="at-det-footer-right">
+          <span className="at-det-help">Need help?</span>
+          <a
+            href="https://telegram.me/shivamnox"
+            target="_blank"
+            rel="noreferrer"
+            className="at-tg-btn"
+          >
+            <i className="fab fa-telegram"></i>
+            @shivamnox
+          </a>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SectionCard({ icon, iconColor, title, badge, children }) {
+  return (
+    <div className="at-section-card">
+      <div className="at-section-head">
+        <div
+          className="at-section-icon"
+          style={{ color: iconColor, background: `${iconColor}18` }}
+        >
+          <i className={icon}></i>
+        </div>
+        <h2 className="at-section-title">{title}</h2>
+        {badge && <span className="at-section-badge">{badge}</span>}
+      </div>
+      <div className="at-section-content">{children}</div>
     </div>
   );
 }
